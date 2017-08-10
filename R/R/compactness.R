@@ -34,13 +34,13 @@ mass_cd <- function(){
 
 #Calculates all metrics and adds output metrics to the spatial dataframe attributes
 allmetricscalc <- function(shape){
-  spdf<-sp::fortify(shape)
-  pericol<-Perimeter(spdf)
-  polsbypoppercol<-PolsbyPopper(spdf)
-  schwartzcol<-Schwartzberg(spdf)
-  shape@data["Perimeter"]<-pericol
-  shape@data["PolsbyPopper"]<-polsbypoppercol
-  shape@data["Schwartzberg"]<-schwartzcol
+  spdf                       <- sp::fortify(shape)
+  pericol                    <- Perimeter(spdf)
+  polsbypoppercol            <- PolsbyPopper(spdf)
+  schwartzcol                <- Schwartzberg(spdf)
+  shape@data["Perimeter"]    <- pericol
+  shape@data["PolsbyPopper"] <- polsbypoppercol
+  shape@data["Schwartzberg"] <- schwartzcol
 }
 
 
