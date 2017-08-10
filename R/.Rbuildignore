@@ -1,0 +1,16 @@
+.git
+.gitignore
+dggridR.*.tar.gz
+wintest
+NOTES
+dggridR.Rcheck
+src/.*\.o$
+src/.*\.depends$
+src/.*\.a$
+src/apps/appex/appex$
+src/apps/dggrid/dggrid$
+src/clean$
+src/Makefile
+src/misc
+mailinglist
+LICENSE
