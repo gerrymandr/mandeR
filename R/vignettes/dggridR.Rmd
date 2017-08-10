@@ -1,147 +1,38 @@
 ---
-title:  "dggridR: Discrete Global Grids for R"
+title:  "gerry: Gerrymandering Compactness Tool"
 author:
 - Richard Barnes
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: bibliography.bib
 vignette: >
-  %\VignetteIndexEntry{dggridR: Discrete Global Grids for R}
+  %\VignetteIndexEntry{gerry: Gerrymandering Compactness Tool}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 
 
-#_Spatial Analysis Done Right_
+#_Gerrymandering Compactness Tool_
 
-You want to do spatial statistics, and it's going to involve binning.
-
-Binning with a rectangular grid introduces messy distortions. At the macro-scale
-using a rectangular grid does things like making Greenland bigger than the
-United States and Antarctica the largest continent.
-
-![Mercator Projection](mercator.png)
-
-But this kind of distortion is present no matter what the resolution is.
-
-What you want are bins of equal size, regardless of where they are on the globe,
-regardless of their resolution.
-
-dggridR solves this problem.
-
-dggridR builds discrete global grids which partition the surface of the Earth
-into hexagonal, triangular, or diamond cells, **all of which have the same
-size.** (There are some minor caveats which are detailed in the vignettes.)
-
-![Discrete Global Grid in use](dggrid.png)
-
-This package includes everything you need to make spatial binning great again.
-
-Many details are included in the vignette.
+TODO: Introduction
 
 
 
-
-#Grids
-
-The following grids are available: 
-
- * ISEA3H:    Icosahedral Snyder Equal Area Aperture 3 Hexagonal Grid
- * ISEA4H:    Icosahedral Snyder Equal Area Aperture 4 Hexagonal Grid
- * ISEA43H:   Icosahedral Snyder Equal Area Mixed Aperture 4,3 Hexagonal Grid
- * ISEA4T:    Icosahedral Snyder Equal Area Aperture 4 Triangular Grid
- * ISEA4D:    Icosahedral Snyder Equal Area Aperture 4 Diamond Grid
- * FULLER3H:  Fuller Aperature 3 Hexagonal Grid
- * FULLER4H:  Fuller Aperature 4 Hexagonal Grid
- * FULLER43H: Fuller Mixed Aperature 4,3 Hexagonal Grid
- * FULLER4T:  Fuller Aperature 4 Triganular Grid
- * FULLER4D:  Fuller Aperature 4 Diamond Grid
-
-Unless you are using cells with very large areas (significant fractions of
-Earth's hemispheres), I recommend the ISEA3H be your default grid.
-
-This grid, along with the other Icosahedral grids ensures that all cells are of
-equal area, with a notable exception. At every resolution, the Icosahedral grids
-contain 12 pentagonal cells which each have an area exactly 5/6 that of the
-hexagonal cells. But you don't need to worry about this too much for two
-reasons. (1) As the table below shows, these cells are a small, small minority
-of the total number of cells. (2) The grids are orientated so that these cells
-are in out-of-the-way places. Future versions of this package will allow you to
-reorient the grids, if need be. (TODO)
-
-For more complex applications than simple spatial binning, it is necessary to
-consider trade-offs between the different grids. Good references for
-understanding these include [@Kimerling1999; @Gregory2008].
-
-Users attempting multi-scale analyses should be aware that in the hexagonal
-grids cells from one resolution level are partially contained by the cells of
-other levels.
-
-![Nested hexagonal grid](hex_grid_nested.png)
-
-At present, there is no convenient way to convert grid cell ids at one
-resolution level to another. In the future, I hope to add this capability to the
-package. (TODO)
-
-
-
-##ISEA3H Details
-
-The following chart shows the number of cells, their area, and statistics
-regarding the spacing of their center nodes for the ISEA3H grid type.
+TODO: Table example
 
 |Res |Number of Cells  | Cell Area (km^2) |    Min      |     Max     |    Mean     |    Std    |
 |---:|----------------:|-----------------:|------------:|------------:|------------:|----------:|
 |  0 |              12 | 51,006,562.17241 |             |             |             |           |
 |  1 |              32 | 17,002,187.39080 | 4,156.18000 | 4,649.10000 | 4,320.49000 | 233.01400 |
 |  2 |              92 |  5,667,395.79693 | 2,324.81000 | 2,692.72000 | 2,539.69000 | 139.33400 |
-|  3 |             272 |  1,889,131.93231 | 1,363.56000 | 1,652.27000 | 1,480.02000 |  89.39030 |
-|  4 |             812 |    629,710.64410 |   756.96100 |   914.27200 |   855.41900 |  52.14810 |
-|  5 |           2,432 |    209,903.54803 |   453.74800 |   559.23900 |   494.95900 |  29.81910 |
-|  6 |           7,292 |     69,967.84934 |   248.80400 |   310.69300 |   285.65200 |  17.84470 |
-|  7 |          21,872 |     23,322.61645 |   151.22100 |   187.55000 |   165.05800 |   9.98178 |
-|  8 |          65,612 |      7,774.20548 |    82.31100 |   104.47000 |    95.26360 |   6.00035 |
-|  9 |         196,832 |      2,591.40183 |    50.40600 |    63.00970 |    55.02260 |   3.33072 |
-| 10 |         590,492 |        863.80061 |    27.33230 |    35.01970 |    31.75960 |   2.00618 |
-| 11 |       1,771,472 |        287.93354 |    16.80190 |    21.09020 |    18.34100 |   1.11045 |
-| 12 |       5,314,412 |         95.97785 |     9.09368 |    11.70610 |    10.58710 |   0.66942 |
-| 13 |      15,943,232 |         31.99262 |     5.60065 |     7.04462 |     6.11367 |   0.37016 |
-| 14 |      47,829,692 |         10.66421 |     3.02847 |     3.90742 |     3.52911 |   0.22322 |
-| 15 |     143,489,072 |          3.55473 |     1.86688 |     2.35058 |     2.03789 |   0.12339 |
-| 16 |     430,467,212 |          1.18491 |     1.00904 |     1.30335 |     1.17638 |   0.07442 |
-| 17 |   1,291,401,632 |          0.39497 |     0.62229 |     0.78391 |     0.67930 |   0.04113 |
-| 18 |   3,874,204,892 |          0.13166 |     0.33628 |     0.43459 |     0.39213 |   0.02481 |
-| 19 |  11,622,614,672 |          0.04389 |     0.20743 |     0.26137 |     0.22643 |   0.01371 |
-| 20 |  34,867,844,012 |          0.01463 |     0.11208 |     0.14489 |     0.13071 |   0.00827 |
-
 
 
 #How do I use it?
 
-1. Construct a discrete global grid system (dggs) object using `dgconstruct()`
+1. TODO
 
-2. Get information about your dggs object using:
-
-    * `dggetres()`
-    * `dginfo()`
-    * `dgmaxcell()`
-
-4. Get the grid cells of some lat-long points with:
-
-    * `dgGEO_to_SEQNUM()`
-    * One of many, many other such functions
-
-5. Get the boundaries of the associated grid cells for use in plotting with:
-
-    * `dgcellstogrid()`
-    * `dgearthgrid()`
-    * `dgrectgrid()`
-    * `dgshptogrid()`
-
-6. Check that your dggs object is valid (if you've mucked with it) using:
-
-    * `dgverify()`
+2. TODO
 
 
 #Examples
@@ -152,7 +43,7 @@ The following example demonstrates converting lat-long locations (the
 epicenters of earthquakes) to discrete global grid locations (cell numbers), binning based on these numbers, and plotting the result. Additionally, the 
 example demonstrates how to get the center coordinates of the cells.
 
-```{r, results='hide', warning=FALSE, error=FALSE, message=FALSE, fig_width=6, fig_height=6}
+```{r, results='hide', warning=FALSE, error=FALSE, message=FALSE, fig.width=8, fig.height=8}
 #Include libraries
 library(gerry)
 library(sp)
@@ -184,53 +75,45 @@ schwartz  <- Schwartzberg(shpvec$long, shpvec$lat, as.numeric(shpvec$id))
 #Add Schwartzberg metric to data frame
 shpvec <- left_join(shpvec,schwartz)
 
+#Plot a chloropleth
 ggplot()+geom_polygon(data=shpvec,aes(x=long,y=lat,group=group,fill=val))
 
+#Break districts apart along with their Schwartzberg score
 ggplot(shpvec, aes(x=long,y=lat,group=group)) + geom_polygon() + facet_wrap(~val, scales="free")
 ```
 
 #Roadmap
 
-* Method to convert between grid cell ids at different resolutions
-
-* In the future, I plan to switch the package from using Kevin Sahr's dggrid
-software to the discrete global grid system standards currently being developed
-by OpenGeospatial. Those standards are being developed by a [software working
-group](http://www.opengeospatial.org/projects/groups/dggsswg) right now, but
-will one day be released. At that point, I expect that GDAL/OGR/PROJ4 will
-incorporate the new standards making wider interoperability possible. Until that
-time, Sahr's dggrid is the best option I've found.
-
-
+* TODO
 
 #Credits
 
-This R package was developed by Richard Barnes (http://rbarnes.org).
+This R package was developed by:
 
-The dggrid conversion software was developed predominantly by Kevin Sahr
-(http://www.discreteglobalgrids.org), with contributions from a few others.
+ * Richard Barnes (http://rbarnes.org)
+ * John Connors
 
-Large portions of the above documentation are drawn from the DGGRID version 6.2b
-User Documentation, which is available in its entirety
-[here](dggrid_v62_manual.pdf).
+Funding was provided by:
+
+ * The Metric Geometry And Gerrymandering Group at Tufts University ([link](https://sites.tufts.edu/gerrymandr/))
 
 
 
 #Disclaimer
 
-This package *should* operate in the manner described here, in the package's
-main documentation, and in Kevin Sahr's dggrid documentation. Unfortunately,
-none of us are paid enough to make absolutely, doggone certain that that's the
-case. Use at your own discretion. That said, if you find bugs or are seeking
-enhancements, we want to hear about them.
+This package *should* operate in the manner described here and in the package's
+main documentation. Unfortunately, none of us are paid enough to make
+absolutely, doggone certain that that's the case. Use at your own discretion.
+That said, if you find bugs or are seeking enhancements, we want to hear about
+them.
 
 
 
 #Citing this Package
 
-Please cite this package as:
+Please cite this package using the text returned by:
 
- > Richard Barnes (2017). dggridR: Discrete Global Grids for R. R package version 0.1.12. https://github.com/r-barnes/dggridR/
+    citation('gerry')
 
 
 
