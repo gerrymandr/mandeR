@@ -5,7 +5,7 @@
 #' @importFrom methods as
 #' @import     dplyr
 #' @import     sp
-#' @useDynLib  dggridR
+#' @useDynLib  dictompact
 
 #' @import rgeos
 
@@ -26,16 +26,6 @@ dgtransform <- function(dggs, lat, lon){ #TODO: Make sure we're not modifying th
   warning("The 'dgtransform' function has been deprecated. Please use 'dgGEO_to_SEQNUM' instead!")
 
   dgGEO_to_SEQNUM(dggs, lon, lat)$seqnum
-}
-
-gmpolsbypopper <- function(shape){
-  #calculate area
-  polyarea=gArea(shape)
-  #calculate perimeter
-  polyperimeter=
-  #calculate metric
-  poppermetric=4 * pi * (polyarea/(polyperimeter^2)
-  #return metric
 }
 
 
@@ -446,54 +436,6 @@ dgrectgrid <- function(dggs,minlat=-1,minlon=-1,maxlat=-1,maxlon=-1,cellsize=0.1
 
 
 
-#' @name dgearthgrid
-#' 
-#' @title   Return the coordinates constituting the boundary of cells for the
-#'          entire Earth
-#'
-#' @description     Note: If you have a high-resolution grid this may take a
-#'                  loooooong time to execute.
-#'
-#' @param dggs      A dggs object from dgconstruct()
-#'
-#' @param frame     If TRUE, return a data frame suitable for ggplot plotting.
-#'                  If FALSE, return an OGR poly object
-#'
-#' @param wrapcells Cells which cross -180/180 degrees can present 
-#'                  difficulties for plotting. Setting this TRUE will result in
-#'                  cells with components in both hemispheres to be mapped
-#'                  entirely to positive degrees (the Eastern hemisphere). As a
-#'                  result, such cells will have components in the range
-#'                  [180,360). Only used when \code{frame=TRUE}.
-#'
-#' @param savegrid  If savegrid is set to a file path, then a shapefile 
-#'                  containing the grid is written to that path and the filename
-#'                  is returned. No other manipulations are done.
-#'                  Default: NA (do not save grid, return it)
-#'
-#' @return Returns a data frame or OGR poly object, as specified by \code{frame}.
-#'         If \code{savegrid=TRUE}, returns a filename.
-#'
-#' @examples 
-#' library(dggridR)
-#' dggs <- dgconstruct(res=20)
-#' res  <- dg_closest_res_to_spacing(dggs,spacing=1000,round='down',metric=FALSE)
-#' dggs <- dgsetres(dggs,res)
-#' gridfilename <- dgearthgrid(dggs,savegrid=TRUE) #Save directly to a file
-#'
-#' @export
-dgearthgrid <- function(dggs,frame=TRUE,wrapcells=TRUE,savegrid=NA){ #TODO: Densify?
-  dgverify(dggs) 
-
-  grid <- GlobalGrid(dggs[["pole_lon_deg"]], dggs[["pole_lat_deg"]], dggs[["azimuth_deg"]], dggs[["aperture"]], dggs[["res"]], dggs[["topology"]], dggs[["projection"]])
-  if(is.na(savegrid)){
-    dg_process_polydata(grid,frame,wrapcells)
-  } else {
-    grid <- dg_process_polydata(grid,frame=FALSE,wrapcells=FALSE)
-    dgsavegrid(grid,savegrid)
-  }
-}
-
 
 
 #' @name dgcellstogrid
@@ -556,102 +498,4 @@ dgcellstogrid <- function(dggs,cells,frame=TRUE,wrapcells=TRUE,savegrid=NA){ #TO
     grid <- dg_process_polydata(grid,frame=FALSE,wrapcells=FALSE)
     dgsavegrid(grid,savegrid)
   }
-}
-
-
-
-#' @name dgsavegrid
-#'
-#' @title           Saves a generated grid to a shapefile
-#'
-#' @description     Saves a generated grid to a shapefile
-#'
-#' @param grid      Grid to be saved
-#' @param shpfname  File to save the grid to
-#'
-#' @return          The filename the grid was saved to
-dgsavegrid <- function(grid,shpfname) {
-  grid<-as(grid, "SpatialPolygonsDataFrame")
-  writeOGR(grid, shpfname, driver='ESRI Shapefile', layer='dggrid')
-  shpfname
-}
-
-
-#' @name dgshptogrid
-#' 
-#' @title           Return boundary coordinates for cells intersecting a 
-#'                  shapefile
-#'
-#' @description     Returns the coordinates constituting the boundary of a 
-#'                  set of cells which intersect or are contained by a polygon
-#'                  (or polygons) specified in a shapefile. Note that grid cells
-#'                  are also generated for holes in the shapefile's polygon(s).
-#'
-#'                  Note that coordinates in the shapefile must be rounded to
-#'                  check polygon intersections. Currently this round preserves
-#'                  eight decimal digits of precision.
-#'
-#'                  The eighth decimal place is worth up to 1.1 mm of precision:
-#'                  this is good for charting the motions of tectonic plates and
-#'                  the movements of volcanoes. Permanent, corrected,
-#'                  constantly-running GPS base stations might be able to
-#'                  achieve this level of accuracy.
-#'
-#'                  In other words: you should be just fine with this level of
-#'                  precision.
-#'
-#' @param dggs      A dggs object from dgconstruct()
-#'
-#' @param shpfname  File name of the shapefile. Filename should end with '.shp'
-#'
-#' @param frame     If TRUE, return a data frame suitable for ggplot plotting.
-#'                  If FALSE, return an OGR poly object
-#'
-#' @param wrapcells Cells which cross -180/180 degrees can present 
-#'                  difficulties for plotting. Setting this TRUE will result in
-#'                  cells with components in both hemispheres to be mapped
-#'                  entirely to positive degrees (the Eastern hemisphere). As a
-#'                  result, such cells will have components in the range
-#'                  [180,360). Only used when \code{frame=TRUE}.
-#'
-#' @param cellsize  Distance, in degrees, between the sample points used to
-#'                  generate the grid. Small values yield long generation times
-#'                  while large values may omit cells.
-#'
-#' @param savegrid  If savegrid is set to a file path, then a shapefile 
-#'                  containing the grid is written to that path and the filename
-#'                  is returned. No other manipulations are done.
-#'                  Default: NA (do not save grid, return it)
-#'
-#' @return Returns a data frame or OGR poly object, as specified by \code{frame}.
-#'         If \code{savegrid=TRUE}, returns a filename.
-#'
-#' @examples 
-#' library(dggridR)
-#'
-#' dggs <- dgconstruct(spacing=25, metric=FALSE, resround='nearest')
-#' south_africa_grid <- dgshptogrid(dggs,dg_shpfname_south_africa())
-#'
-#' @export
-dgshptogrid <- function(dggs,shpfname,cellsize=0.1,frame=TRUE,wrapcells=TRUE,savegrid=NA){ #TODO: Densify?
-  dgverify(dggs) 
-
-  shpfname <- trimws(shpfname)
-
-  if(!grepl('\\.shp$',shpfname))
-    stop("Shapefile name does to end with '.shp'!")
-  if(!file.exists(shpfname))
-    stop('Shapefile does not exist!')
-
-  dsn   <- dirname(shpfname)
-  layer <- tools::file_path_sans_ext(basename(shpfname))
-  poly  <- readOGR(dsn=dsn, layer=layer)
-
-  #Generate a dense grid of points
-  samp_points <- sp::makegrid(poly, cellsize = 0.1)
-
-  #Convert the points to SEQNUM ids for dggs
-  samp_points <- dgGEO_to_SEQNUM(dggs,samp_points$x1, samp_points$x2)$seqnum
-
-  dgcellstogrid(dggs, samp_points, frame=frame, wrapcells=wrapcells, savegrid=savegrid)
 }
