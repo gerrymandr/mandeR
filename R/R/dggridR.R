@@ -28,14 +28,23 @@ dgtransform <- function(dggs, lat, lon){ #TODO: Make sure we're not modifying th
   dgGEO_to_SEQNUM(dggs, lon, lat)$seqnum
 }
 
-gmpolsbypopper <- function(shape){
-  #calculate area
-  polyarea=gArea(shape)
-  #calculate perimeter
-  polyperimeter=
-  #calculate metric
-  poppermetric=4 * pi * (polyarea/(polyperimeter^2)
-  #return metric
+
+allmetricscalc <- function(shape){#Calculates all metrics and adds output metrics to the spatial dataframe attributes
+  spdf<-fortify(shape)
+  pericol<-Perimeter(spdf)
+  polsbypoppercol<-PolsbyPopper(spdf)
+  schwartzcol<-Schwartzberg(spdf)
+  shape@data["Perimeter"]<-pericol
+  shape@data["PolsbyPopper"]<-polsbypoppercol
+  shape@data["Schwartzberg"]<-schwartzcol
+}
+
+PerimeterCalc<-function(nodevector){
+  PerimeterVector<-Perimeter(nodevector)
+}
+
+PolsbyPopper<-function(nodevector){
+
 }
 
 
