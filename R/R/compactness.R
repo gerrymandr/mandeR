@@ -91,7 +91,7 @@ PerimeterCalc<-function(x,y,id=NA){
   if(is.na(id))
     gerry:::gPerimeter(x,y)
   else
-    gerry:::gPerimeterMulti(x,y,id)
+    as.data.frame(gerry:::gPerimeterMulti(x,y,id))
 }
 
 
@@ -141,7 +141,7 @@ AreaCalc<-function(x,y,id=NA){
   if(is.na(id))
     gerry:::gPolygonArea(x,y)
   else
-    gerry:::gPolygonAreaMulti(x,y,id)
+    as.data.frame(gerry:::gPolygonAreaMulti(x,y,id))
 }
 
 
@@ -193,7 +193,7 @@ PolsbyPopper<-function(x,y,id=NA){
   if(is.na(id))
     gerry:::gScorePolsbyPopper(x,y)
   else
-    gerry:::gScorePolsbyPopperMulti(x,y,id)
+    as.data.frame(gerry:::gScorePolsbyPopperMulti(x,y,id))
 }
 
 
@@ -244,7 +244,7 @@ Schwartzberg<-function(x,y,id=NA){
     gerry:::gScoreSchwartzberg(x,y)
   }
   else{
-    gerry:::gScoreSchwartzbergMulti(x,y,id)
+    as.data.frame(gerry:::gScoreSchwartzbergMulti(x,y,id))
   }
 }
 
@@ -298,7 +298,7 @@ ConvexHull<-function(x,y,id=NA){
     gerry:::gScoreConvexHull(x,y)
   }
   else{
-    gerry:::gScoreConvexHullMulti(x,y,id)
+    as.data.frame(gerry:::gScoreConvexHullMulti(x,y,id))
   }
 }
 
