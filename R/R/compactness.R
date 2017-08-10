@@ -191,9 +191,9 @@ AreaCalc<-function(x,y,id=NA){
 
 PolsbyPopper<-function(x,y,id=NA){
   if(is.na(id))
-    gerry:::gPolsbyPopper(x,y)
+    gerry:::gScorePolsbyPopper(x,y)
   else
-    gerry:::gPolsbyPopperMulti(x,y,id)
+    gerry:::gScorePolsbyPopperMulti(x,y,id)
 }
 
 
@@ -241,12 +241,12 @@ PolsbyPopper<-function(x,y,id=NA){
 #' @export
 
 
-ConvexHull<-function(x,y,id=NA){
+Schwartzberg<-function(x,y,id=NA){
   if(is.na(id)){
-    gerry:::gSchwartzberg(x,y)
+    gerry:::gScoreSchwartzberg(x,y)
   }
   else{
-    gerry:::gSchwartzbergMulti(x,y,id)
+    gerry:::gScoreSchwartzbergMulti(x,y,id)
   }
 }
 
@@ -297,10 +297,10 @@ ConvexHull<-function(x,y,id=NA){
 
 ConvexHull<-function(x,y,id=NA){
   if(is.na(id)){
-    gerry:::gConvexHull(x,y)
+    gerry:::gScoreConvexHull(x,y)
   }
   else{
-    gerry:::gConvexHullMulti(x,y,id)
+    gerry:::gScoreConvexHullMulti(x,y,id)
   }
 }
 
