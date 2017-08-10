@@ -1,4 +1,4 @@
-Rcpp::loadModule("dictompact",   TRUE)
+Rcpp::loadModule("complib",   TRUE)
 #Rcpp::loadModule("gridgens",  TRUE)
 #Rcpp::loadModule("gridstats", TRUE)
 
