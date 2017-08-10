@@ -88,7 +88,7 @@ allmetricscalc <- function(shape){
 #' @export
 
 PerimeterCalc<-function(x,y,id=NA){
-  if(is.na(id))
+  if(is.list(id))
     gerry:::gPerimeter(x,y)
   else
     as.data.frame(gerry:::gPerimeterMulti(x,y,id))
@@ -138,7 +138,7 @@ PerimeterCalc<-function(x,y,id=NA){
 #'  
 #' @export
 AreaCalc<-function(x,y,id=NA){
-  if(is.na(id))
+  if(is.list(id))
     gerry:::gPolygonArea(x,y)
   else
     as.data.frame(gerry:::gPolygonAreaMulti(x,y,id))
@@ -190,7 +190,7 @@ AreaCalc<-function(x,y,id=NA){
 
 
 PolsbyPopper<-function(x,y,id=NA){
-  if(is.na(id))
+  if(is.list(id))
     gerry:::gScorePolsbyPopper(x,y)
   else
     as.data.frame(gerry:::gScorePolsbyPopperMulti(x,y,id))
@@ -240,7 +240,7 @@ PolsbyPopper<-function(x,y,id=NA){
 #'  
 #' @export
 Schwartzberg<-function(x,y,id=NA){
-  if(is.na(id)){
+  if(is.list(id)){
     gerry:::gScoreSchwartzberg(x,y)
   }
   else{
@@ -294,7 +294,7 @@ Schwartzberg<-function(x,y,id=NA){
 
 
 ConvexHull<-function(x,y,id=NA){
-  if(is.na(id)){
+  if(is.list(id)){
     gerry:::gScoreConvexHull(x,y)
   }
   else{
