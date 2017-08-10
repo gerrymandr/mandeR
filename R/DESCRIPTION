@@ -15,7 +15,7 @@ Suggests: knitr,
     testthat
 License: MIT + file LICENCE
 Authors@R: c(person("Richard", "Barnes",    role = c("aut", "cre"), email = "rbarnes@umn.edu"),
-             person("John",   "Connors",    role = c("aut", "cre", email = "jpcc@bu.edu"))
+             person("John",   "Connors",    role = c("aut", "cre"), email = "jpcc@bu.edu"))
 Description: TODO
 URL: https://github.com/r-barnes/compactnesslib
 BugReports: https://github.com/r-barnes/compactnesslib
