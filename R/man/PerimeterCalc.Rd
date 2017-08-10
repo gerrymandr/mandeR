@@ -4,7 +4,7 @@
 \alias{PerimeterCalc}
 \title{Calculate the perimeter of all polygons in a spatial data frame}
 \usage{
-PerimeterCalc(lon, lat, id)
+PerimeterCalc(lon, lat, id = NA)
 }
 \arguments{
 \item{nodevector}{A vector of the XY coordinates for all nodes in a polygon - generated using sp.fortify()}
