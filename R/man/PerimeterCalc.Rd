@@ -4,7 +4,7 @@
 \alias{PerimeterCalc}
 \title{Calculate the perimeter of all polygons in a spatial data frame}
 \usage{
-PerimeterCalc(nodevector)
+PerimeterCalc(lon, lat, id)
 }
 \arguments{
 \item{nodevector}{A vector of the XY coordinates for all nodes in a polygon - generated using sp.fortify()}
@@ -21,16 +21,27 @@ Returns a vector of values with the perimeters for all polygons in the Spatial D
 library(sp)
 library(ggplot2)
 library(plyr)
-shapefilepath     <- mass_cd()                    #identify the path of the sample shapefile of congressional districts
-shape             <- readOGR(shapefilepath)       #create a spatial data frame
+library(gerry)
+library(dplyr)
+#identify the path of the sample shapefile of congressional districts
+shapefilepath     <- mass_cd()                    
+#create a spatial data frame
+shape             <- readOGR(shapefilepath)       
 #Specify and equal area coordinate reference system
 proj              <- test<-CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m")
-reproj            <- spTransform(shape,proj)      #reproject the data to the specified CRS
-reproj@data["id"] <- rownames(shape@data)         #Create an ID number for each polgyon
-shape2            <- fortify(reproj)              #fortify the data, converting it to a vector of XY values
-shpvector         <- fortify(reproj)              #create a vector of the nodes in the polygons for the spatial data frame
-shpperim          <- PerimeterCalc(shpvector)     #Calculate the perimeter of the polygons and return a list of values
-shpvector@data["Perimeter"]<-shpperim             #Add a column of the perimeter values to the spatial data frame
+#reproject the data to the specified CRS
+reproj            <- spTransform(shape,proj)      
+#Create an ID number for each polgyon
+reproj@data["id"] <- rownames(shape@data)         
+#fortify the data, converting it to a vector of XY values
+shape2            <- fortify(reproj)              
+#create a vector of the nodes in the polygons for the spatial data frame
+shpvector         <- fortify(reproj)              
+sdict             <- shpvector \%>\% filter(group==0.1)
+#Calculate the perimeter of the polygons and return a list of values
+shpperim          <- PerimeterCalc(sdict$long, sdict$lat, sdict$id) 
+#Add a column of the perimeter values to the spatial data frame
+shpvector@data["Perimeter"]<-shpperim         
 ggplot()+
   geom_polygon(data=shape3,aes(x=long,y=lat,group=group,fill=shpvector$Perimeter))     
  
