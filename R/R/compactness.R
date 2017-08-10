@@ -239,8 +239,6 @@ PolsbyPopper<-function(x,y,id=NA){
 #'   fill=shpvector$Schwartzberg))     
 #'  
 #' @export
-
-
 Schwartzberg<-function(x,y,id=NA){
   if(is.na(id)){
     gerry:::gScoreSchwartzberg(x,y)
