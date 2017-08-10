@@ -2,39 +2,40 @@
 % Please edit documentation in R/compactness.R
 \name{PerimeterCalc}
 \alias{PerimeterCalc}
-\title{Calculate the perimeter of all polygons in a spatial data frame}
+\title{Calculate the perimeter one or more polygons}
 \usage{
-PerimeterCalc(lon, lat, id = NA)
+PerimeterCalc(x, y, id = NA)
 }
 \arguments{
-\item{nodevector}{A vector of the XY coordinates for all nodes in a polygon - generated using sp.fortify()}
+\item{x}{X-coordinates of the polygon nodes}
+
+\item{y}{Y-coordinates of the polygon nodes}
 }
 \value{
-A vector of the perimeter measurements for each polygon in the Spatial Data Frame.
+The perimeter of one polygon or a dataframe of id-perimeter pairs
 }
 \description{
-Returns a vector of values with the perimeters for all polygons in the Spatial Data Frame.
+Calculates the perimeter of one or more polygons from a spatial data
+       frame. The frame can be generated with sp::fortify()
 }
 \examples{
 
-   
 library(sp)
 library(ggplot2)
 library(plyr)
 library(gerry)
-library(dplyr)
 #identify the path of the sample shapefile of congressional districts
 shapefilepath     <- mass_cd()                    
 #create a spatial data frame
 shape             <- readOGR(shapefilepath)       
 #Specify and equal area coordinate reference system
-proj              <- test<-CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m")
+proj              <- test<-CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 
+                                +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 
+                                +datum=NAD83 +units=m")
 #reproject the data to the specified CRS
 reproj            <- spTransform(shape,proj)      
 #Create an ID number for each polgyon
-reproj@data["id"] <- rownames(shape@data)         
-#fortify the data, converting it to a vector of XY values
-shape2            <- fortify(reproj)              
+reproj@data["id"] <- rownames(shape@data)                   
 #create a vector of the nodes in the polygons for the spatial data frame
 shpvector         <- fortify(reproj)              
 sdict             <- shpvector \%>\% filter(group==0.1)
@@ -43,6 +44,7 @@ shpperim          <- PerimeterCalc(sdict$long, sdict$lat, sdict$id)
 #Add a column of the perimeter values to the spatial data frame
 shpvector@data["Perimeter"]<-shpperim         
 ggplot()+
-  geom_polygon(data=shape3,aes(x=long,y=lat,group=group,fill=shpvector$Perimeter))     
+  geom_polygon(data=shape3,aes(x=long,y=lat,group=group,
+               fill=shpvector$Perimeter))     
  
 }
