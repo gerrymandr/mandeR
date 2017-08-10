@@ -7,6 +7,8 @@
 #' @import     sp
 #' @useDynLib  dggridR
 
+#' @import rgeos
+
 
 #' @name dg_exe_path
 #' 
@@ -17,256 +19,7 @@
 #'
 #' @return A string representing the path to the dggrid executable.
 #'
-dg_exe_path <- function(){
-  exe_name <- switch(Sys.info()[['sysname']], Windows='dggrid.exe', 'dggrid')
-  file.path(find.package('dggridR'), "bin", exe_name)
-}
 
-#' @name dg_env
-#' 
-#' @title Control global aspects of the dggridR package
-#'
-#' @description
-#'        This environment is used to control global features of the dggridR
-#'        package. At the moment the only option is 'dg_debug' which, when set
-#'        to TRUE provides extensive outputs useful for tracking down bugs.
-#'
-dg_env <- new.env()
-assign("dg_debug", FALSE, envir=dg_env)
-
-#' @name dg_shpfname_south_africa
-#' 
-#' @title National border of South Africa
-#'
-#' @description
-#'        This variable points to a shapefile containing the national border
-#'        of South Africa
-#'
-#' @return A filename of a shapefile containing the national border of South Africa
-#'
-#' @export
-dg_shpfname_south_africa <- function(){
-  file.path(find.package('dggridR'), "extdata", "ZAF_adm0.shp")
-}
-
-
-
-#' @name dgconstruct
-#' 
-#' @title      Construct a discrete global grid system (dggs) object
-#'
-#' @description
-#'             Construct a discrete global grid system (dggs) object
-#' 
-#' @param projection Type of grid to use. Options are: ISEA and FULLER.
-#'                   Default: ISEA3H
-#'
-#' @param topology   Shape of cell. Options are: HEXAGON, DIAMOND, TRIANGLE.
-#'                   Default: HEXAGON
-#'
-#' @param aperture   How finely subsequent resolution levels divide the grid.
-#'                   Options are: 3, 4. Not all options work with all 
-#'                   projections and topologies.
-#'                   Default: 3
-#'
-#' @param res  Resolution. Must be in the range [0,30]. Larger values represent
-#'             finer resolutions. Appropriate resolutions can be found with
-#'             dg_closest_res_to_area(), dg_closest_res_to_spacing(), and
-#'             dg_closest_res_to_cls(). Default is 9, which corresponds to a
-#'             cell area of ~2600 sq km and a cell spacing of ~50 km.
-#'             Only one of res, area, length, or cls should be used.
-#'
-#' @param precision Round output to this number of decimal places. Must be in
-#'                  the range [0,30]. Default: 7.
-#'
-#' @param area      The desired area of the grid's cells.
-#'                  Only one of res, area, length, or cls should be used.
-#'
-#' @param spacing   The desired spacing between the center of adjacent cells.
-#'                  Only one of res, area, length, or cls should be used.
-#'
-#' @param cls       The desired CLS of the cells.
-#'                  Only one of res, area, length, or cls should be used.
-#'
-#' @param resround  What direction to search in. Must be nearest, up, or down.
-#'
-#' @param show_info Print the area, spacing, and CLS of the chosen resolution.
-#'
-#' @param metric    Whether input and output should be in metric (TRUE) or
-#'                  imperial (FALSE)
-#'
-#' @param azimuth_deg   Rotation in degrees of grid about its pole, value in [0,360].
-#'                      Default=0.
-#'
-#' @param pole_lat_deg  Latitude in degrees of the pole, value in [-90,90].
-#'                      Default=58.28252559.
-#'
-#' @param pole_lon_deg  Longitude in degrees of the pole, value in [-180,180].
-#'                      Default=11.25.
-#'
-#' @return          Returns a dggs object which can be passed to other dggridR
-#'                  functions
-#'
-#' @examples 
-#' library(dggridR)
-#' dggs <- dgconstruct(res=20)
-#'
-#' dggs <- dgconstruct(area=5,metric=FALSE)
-#'
-#' @export 
-dgconstruct <- function(
-  projection   = 'ISEA',
-  aperture     = 3,
-  topology     = 'HEXAGON',
-  res          = NA,
-  precision    = 7,
-  area         = NA,
-  spacing      = NA,
-  cls          = NA,
-  resround     = 'nearest',
-  metric       = TRUE,
-  show_info    = TRUE,
-  azimuth_deg  = 0,
-  pole_lat_deg = 58.28252559,
-  pole_lon_deg = 11.25
-){
-  if(sum(!is.na(c(res,area,spacing,cls)))!=1)
-    stop('dgconstruct(): Only one of res, area, length, or cls can have a value!')
-
-  #Use a dummy resolution, we'll fix it in a moment
-  dggs <- list(
-    pole_lon_deg = pole_lon_deg,
-    pole_lat_deg = pole_lat_deg,
-    azimuth_deg  = azimuth_deg,
-    aperture     = aperture,
-    res          = 1,
-    topology     = topology,
-    projection   = projection,
-    precision    = precision
-  )
-
-  if(!is.na(res))
-    dggs[['res']] = res
-  else if(!is.na(area))
-    dggs[['res']] = dg_closest_res_to_area   (dggs,area=area,      round=resround,metric=metric,show_info=TRUE)
-  else if(!is.na(spacing))
-    dggs[['res']] = dg_closest_res_to_spacing(dggs,spacing=spacing,round=resround,metric=metric,show_info=TRUE)
-  else if(!is.na(cls))
-    dggs[['res']] = dg_closest_res_to_cls    (dggs,cls=cls,        round=resround,metric=metric,show_info=TRUE)
-  else
-    stop('dgconstruct(): Logic itself has failed us.')
-
-  dgverify(dggs)
-
-  dggs
-}
-
-
-
-#' @name dgsetres
-#' 
-#' @title Set the resolution of a dggs object
-#'
-#' @description
-#'             Set the resolution of a dggs object
-#'
-#' @param dggs A dggs object from dgconstruct().
-#'
-#' @param res  Resolution. Must be in the range [0,30]. Larger values represent
-#'             finer resolutions. Appropriate resolutions can be found with
-#'             dg_closest_res_to_area(), dg_closest_res_to_spacing(), and
-#'             dg_closest_res_to_cls(). Default is 9, which corresponds to a
-#'             cell area of ~2600 sq km and a cell spacing of ~50 km.
-#'             Default: 9.
-#'
-#' @return     Returns a dggs object which can be passed to other dggridR
-#'             functions
-#'
-#' @examples 
-#' library(dggridR)
-#' dggs <- dgconstruct(res=20)
-#' dggs <- dgsetres(dggs,10)
-#'
-#' @export 
-dgsetres <- function(dggs,res){
-  dggs[['res']] = res
-  dgverify(dggs)
-  dggs
-}
-
-
-
-#' @name dgverify
-#' 
-#' @title Verify that a dggs object has appropriate values
-#'
-#' @description
-#'             Verify that a dggs object has appropriate values
-#' 
-#' @param dggs The dggs object to be verified
-#'
-#' @return     The function has no return value. A stop signal is raised if the
-#'             object is misspecified
-#' @examples
-#' library(dggridR)
-#' dggs <- dgconstruct(res=20)
-#' dgverify(dggs)
-#'
-#' @export
-dgverify <- function(dggs){
-  #See page 21 of documentation for further bounds
-  if(!(dggs[['projection']] %in% c('ISEA','FULLER')))
-    stop('Unrecognised dggs projection', call.=FALSE) #TODO: Where can they get valid types?
-  if(!(dggs[['topology']] %in% c('HEXAGON','DIAMOND','TRIANGLE')))
-    stop('Unrecognised dggs topology', call.=FALSE) #TODO: Where can they get valid types?
-  if(!(dggs[['aperture']] %in% c(3,4)))
-    stop('Unrecognised dggs aperture', call.=FALSE) #TODO: Where can they get valid types?
-  if(dggs[['res']]<0)
-    stop('dggs resolution must be >=0', call.=FALSE)
-  if(dggs[['res']]>30)
-    stop('dggs resolution must be <=30', call.=FALSE)
-  if(dggs[['azimuth_deg']]<0 || dggs[['azimuth_deg']]>360)
-    stop('dggs azimuth_deg must be in the range [0,360]')
-  if(dggs[['pole_lat_deg']]<(-90) || dggs[['pole_lat_deg']]>90)
-    stop('dggs pole_lat_deg must be in the range [-90,90]')
-  if(dggs[['pole_lon_deg']]<(-180) || dggs[['pole_lon_deg']]>180)
-    stop('dggs pole_lon_deg must be in the range [-180,180]')
-  if(!all.equal(dggs[['res']], as.integer(dggs[['res']])))
-    stop('dggs resolution must be an integer', call.=FALSE)
-}
-
-
-
-#' @name dgtransform
-#' 
-#' @title (DEPRECATED) Converts lat-long pairs into discrete global grid cell numbers
-#'
-#' @description
-#'          A discrete global grid maps lat-long points to particular cells.
-#'          These cells are uniquely numbered, for a given resolution, from
-#'          1 to some maximum number. Cell numbers may be reused from one
-#'          resolution to the next.
-#'          THIS FUNCTION IS DEPRECATED.
-#' 
-#' @param dggs A dggs object from dgconstruct().
-#'
-#' @param lat  A vector of latitudes. Same length at the longtiudes
-#'
-#' @param lon  A vector of longitudes. Same length as the latitudes.
-#'
-#' @return     A vector of the same length as latitudes and longitudes 
-#'             containing the cell id numbers of the points' cells
-#'             in the discrete grid.
-#'
-#' @examples 
-#' library(dggridR)
-#' data(dgquakes)
-#'
-#' #Construct a grid with cells about ~1000 miles wide
-#' dggs          <- dgconstruct(spacing=1000,metric=FALSE) 
-#' dgquakes$cell <- dgtransform(dggs,dgquakes$lat,dgquakes$lon)
-#'
-#' @export 
 dgtransform <- function(dggs, lat, lon){ #TODO: Make sure we're not modifying the original dggs
   dgverify(dggs)
 
@@ -275,6 +28,15 @@ dgtransform <- function(dggs, lat, lon){ #TODO: Make sure we're not modifying th
   dgGEO_to_SEQNUM(dggs, lon, lat)$seqnum
 }
 
+gmpolsbypopper <- function(shape){
+  #calculate area
+  polyarea=gArea(shape)
+  #calculate perimeter
+  polyperimeter=
+  #calculate metric
+  poppermetric=4 * pi * (polyarea/(polyperimeter^2)
+  #return metric
+}
 
 
 #' @name dginfo
@@ -295,6 +57,7 @@ dgtransform <- function(dggs, lat, lon){ #TODO: Make sure we're not modifying th
 #' dginfo(dggs)
 #'
 #' @export 
+
 dginfo <- function(dggs){
   dgverify(dggs)
 
