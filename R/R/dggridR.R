@@ -19,6 +19,11 @@
 #'
 #' @return A string representing the path to the dggrid executable.
 #'
+mass_cd <- function(){
+  file.path(find.package('dictompact'), "extdata", "CONGRESSMA_POLY.shp")
+}
+
+
 
 dgtransform <- function(dggs, lat, lon){ #TODO: Make sure we're not modifying the original dggs
   dgverify(dggs)
