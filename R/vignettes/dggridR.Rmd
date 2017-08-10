@@ -80,6 +80,11 @@ ggplot()+geom_polygon(data=shpvec,aes(x=long,y=lat,group=group,fill=val))
 
 #Break districts apart along with their Schwartzberg score
 ggplot(shpvec, aes(x=long,y=lat,group=group)) + geom_polygon() + facet_wrap(~val, scales="free")
+
+#Export to Shapefile
+schwartz$id<-as.character(schwartz$id)
+reproj@data<-left_join(reproj@data,schwartz)
+writeOGR(obj=reproj, dsn="tempdir", layer="Schwartzberg", driver="ESRI Shapefile") 
 ```
 
 #Roadmap
