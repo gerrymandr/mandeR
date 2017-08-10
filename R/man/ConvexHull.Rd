@@ -2,12 +2,9 @@
 % Please edit documentation in R/compactness.R
 \name{ConvexHull}
 \alias{ConvexHull}
-\alias{ConvexHull}
-\title{Calculate Schwartzberg Metric for one or multiple polygons in a
+\title{Calculate Convex Hull Metric for one or multiple polygons in a
        Shapefile}
 \usage{
-ConvexHull(x, y, id = NA)
-
 ConvexHull(x, y, id = NA)
 }
 \arguments{
@@ -16,54 +13,15 @@ ConvexHull(x, y, id = NA)
 \item{y}{Y-coordinates of the polygon nodes}
 
 \item{id}{ids which indicate to which polygons each xy-coordinate belongs}
-
-\item{x}{X-coordinates of the polygon nodes}
-
-\item{y}{Y-coordinates of the polygon nodes}
-
-\item{id}{ids which indicate to which polygons each xy-coordinate belongs}
 }
 \value{
-The Schwartzberg metrics
-
 The Convex Hull metrics
 }
 \description{
-Returns a vector of values with the Schwartzberg metric for all 
-       polygons in the Spatial Data Frame.
-
 Returns a vector of values with the Convex Hull / Area metric for all 
        polygons in the Spatial Data Frame.
 }
 \examples{
-  
-library(sp)
-library(ggplot2)
-library(plyr)
-library(gerry)
-#identify the path of the sample shapefile of congressional districts
-shapefilepath     <- mass_cd()                    
-#create a spatial data frame
-shape             <- readOGR(shapefilepath)       
-#Specify and equal area coordinate reference system
-proj              <- test<-CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 
-                                +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 
-                                +datum=NAD83 +units=m")
-#reproject the data to the specified CRS
-reproj            <- spTransform(shape,proj)      
-#Create an ID number for each polgyon
-reproj@data["id"] <- rownames(shape@data)                   
-#create a vector of the nodes in the polygons for the spatial data frame
-shpvector         <- fortify(reproj)              
-sdict             <- shpvector \%>\% filter(group==0.1)
-#Calculate the Convex Hull metric of the polygons and return a list of values
-schwartz          <- Schwartzberg(sdict$long, sdict$lat, sdict$id) 
-#Add a column of the Schwartzburg values to the spatial data frame
-shpvector@data["Schwartzberg"]<- schwartz        
-ggplot()+
-  geom_polygon(data=shape3,aes(x=long,y=lat,group=group,
-  fill=shpvector$Schwartzberg))     
- 
   
 library(sp)
 library(ggplot2)
