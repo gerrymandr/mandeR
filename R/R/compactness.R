@@ -52,7 +52,7 @@ allmetricscalc <- function(shape){
 #'
 #' @param  x   X-coordinates of the polygon nodes
 #' @param  y   Y-coordinates of the polygon nodes
-#' @parma  id  ids which indicate to which polygons each xy-coordinate belongs
+#' @param  id  ids which indicate to which polygons each xy-coordinate belongs
 #'
 #' @return The perimeter of one polygon or a dataframe of id-perimeter pairs
 #'
@@ -104,7 +104,7 @@ PerimeterCalc<-function(x,y,id=NA){
 #'
 #' @param  x   X-coordinates of the polygon nodes
 #' @param  y   Y-coordinates of the polygon nodes
-#' @parma  id  ids which indicate to which polygons each xy-coordinate belongs
+#' @param  id  ids which indicate to which polygons each xy-coordinate belongs
 #' 
 #' @return  The area of polygon(s) 
 #' @examples
@@ -154,7 +154,7 @@ AreaCalc<-function(x,y,id=NA){
 #'
 #' @param  x   X-coordinates of the polygon nodes
 #' @param  y   Y-coordinates of the polygon nodes
-#' @parma  id  ids which indicate to which polygons each xy-coordinate belongs
+#' @param  id  ids which indicate to which polygons each xy-coordinate belongs
 #' 
 #' @return  The Polsby Popper metrics 
 #' @examples
@@ -206,7 +206,7 @@ PolsbyPopper<-function(x,y,id=NA){
 #'
 #' @param  x   X-coordinates of the polygon nodes
 #' @param  y   Y-coordinates of the polygon nodes
-#' @parma  id  ids which indicate to which polygons each xy-coordinate belongs
+#' @param  id  ids which indicate to which polygons each xy-coordinate belongs
 #' 
 #' @return  The Schwartzberg metrics 
 #' @examples
@@ -260,7 +260,7 @@ ConvexHull<-function(x,y,id=NA){
 #'
 #' @param  x   X-coordinates of the polygon nodes
 #' @param  y   Y-coordinates of the polygon nodes
-#' @parma  id  ids which indicate to which polygons each xy-coordinate belongs
+#' @param  id  ids which indicate to which polygons each xy-coordinate belongs
 #' 
 #' @return  The Convex Hull metrics 
 #' @examples

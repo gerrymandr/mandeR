@@ -10,6 +10,8 @@ PerimeterCalc(x, y, id = NA)
 \item{x}{X-coordinates of the polygon nodes}
 
 \item{y}{Y-coordinates of the polygon nodes}
+
+\item{id}{ids which indicate to which polygons each xy-coordinate belongs}
 }
 \value{
 The perimeter of one polygon or a dataframe of id-perimeter pairs
