@@ -86,12 +86,64 @@ allmetricscalc <- function(shape){
 #'                fill=shpvector$Perimeter))     
 #'  
 #' @export
+
 PerimeterCalc<-function(x,y,id=NA){
   if(is.na(id))
     gerry:::gPerimeter(x,y)
   else
     gerry:::gPerimeterMulti(x,y,id)
 }
+
+
+#' @title Calculate the area for one or multiple polygons in a
+#'        Shapefile
+#'
+#' @description
+#'        Returns a vector of values with the area for all 
+#'        polygons in the Spatial Data Frame.
+#'
+#' @param  x   X-coordinates of the polygon nodes
+#' @param  y   Y-coordinates of the polygon nodes
+#' @parma  id  ids which indicate to which polygons each xy-coordinate belongs
+#' 
+#' @return  The area of polygon(s) 
+#' @examples
+#'   
+#' library(sp)
+#' library(ggplot2)
+#' library(plyr)
+#' library(gerry)
+#' #identify the path of the sample shapefile of congressional districts
+#' shapefilepath     <- mass_cd()                    
+#' #create a spatial data frame
+#' shape             <- readOGR(shapefilepath)       
+#' #Specify and equal area coordinate reference system
+#' proj              <- test<-CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 
+#'                                 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 
+#'                                 +datum=NAD83 +units=m")
+#' #reproject the data to the specified CRS
+#' reproj            <- spTransform(shape,proj)      
+#' #Create an ID number for each polgyon
+#' reproj@data["id"] <- rownames(shape@data)                   
+#' #create a vector of the nodes in the polygons for the spatial data frame
+#' shpvector         <- fortify(reproj)              
+#' sdict             <- shpvector %>% filter(group==0.1)
+#' #Calculate the area of the polygons and return a list of values
+#' parea        <- AreaCalc(sdict$long, sdict$lat, sdict$id) 
+#' #Add a column of the perimeter values to the spatial data frame
+#' shpvector@data["Area"]<- parea         
+#' ggplot()+
+#'   geom_polygon(data=shape3,aes(x=long,y=lat,group=group,
+#'                fill=shpvector$Area))     
+#'  
+#' @export
+AreaCalc<-function(x,y,id=NA){
+  if(is.na(id))
+    gerry:::gPolygonArea(x,y)
+  else
+    gerry:::gPolygonAreaMulti(x,y,id)
+}
+
 
 #' @title Calculate Polsby Popper Metric for one or multiple polygons in a
 #'        Shapefile
@@ -126,7 +178,7 @@ PerimeterCalc<-function(x,y,id=NA){
 #' #create a vector of the nodes in the polygons for the spatial data frame
 #' shpvector         <- fortify(reproj)              
 #' sdict             <- shpvector %>% filter(group==0.1)
-#' #Calculate the perimeter of the polygons and return a list of values
+#' #Calculate the Polsby Popper metric of the polygons and return a list of values
 #' PolPop        <- PolsbyPopper(sdict$long, sdict$lat, sdict$id) 
 #' #Add a column of the perimeter values to the spatial data frame
 #' shpvector@data["PolsbyPopper"]<- PolPop         
@@ -136,12 +188,68 @@ PerimeterCalc<-function(x,y,id=NA){
 #'  
 #' @export
 
-PolsbyPopper<-function(nodevector){
+
+PolsbyPopper<-function(x,y,id=NA){
   if(is.na(id))
     gerry:::gPolsbyPopper(x,y)
   else
     gerry:::gPolsbyPopperMulti(x,y,id)
 }
+
+
+#' @title Calculate Schwartzberg Metric for one or multiple polygons in a
+#'        Shapefile
+#'
+#' @description
+#'        Returns a vector of values with the Schwartzberg metric for all 
+#'        polygons in the Spatial Data Frame.
+#'
+#' @param  x   X-coordinates of the polygon nodes
+#' @param  y   Y-coordinates of the polygon nodes
+#' @parma  id  ids which indicate to which polygons each xy-coordinate belongs
+#' 
+#' @return  The Schwartzberg metrics 
+#' @examples
+#'   
+#' library(sp)
+#' library(ggplot2)
+#' library(plyr)
+#' library(gerry)
+#' #identify the path of the sample shapefile of congressional districts
+#' shapefilepath     <- mass_cd()                    
+#' #create a spatial data frame
+#' shape             <- readOGR(shapefilepath)       
+#' #Specify and equal area coordinate reference system
+#' proj              <- test<-CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 
+#'                                 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 
+#'                                 +datum=NAD83 +units=m")
+#' #reproject the data to the specified CRS
+#' reproj            <- spTransform(shape,proj)      
+#' #Create an ID number for each polgyon
+#' reproj@data["id"] <- rownames(shape@data)                   
+#' #create a vector of the nodes in the polygons for the spatial data frame
+#' shpvector         <- fortify(reproj)              
+#' sdict             <- shpvector %>% filter(group==0.1)
+#' #Calculate the Convex Hull metric of the polygons and return a list of values
+#' schwartz          <- Schwartzberg(sdict$long, sdict$lat, sdict$id) 
+#' #Add a column of the Schwartzburg values to the spatial data frame
+#' shpvector@data["Schwartzberg"]<- schwartz        
+#' ggplot()+
+#'   geom_polygon(data=shape3,aes(x=long,y=lat,group=group,
+#'   fill=shpvector$Schwartzberg))     
+#'  
+#' @export
+
+
+ConvexHull<-function(x,y,id=NA){
+  if(is.na(id)){
+    gerry:::gSchwartzberg(x,y)
+  }
+  else{
+    gerry:::gSchwartzbergMulti(x,y,id)
+  }
+}
+
 
 #' @title Calculate Convex Hull Metric for one or multiple polygons in a
 #'        Shapefile
@@ -178,7 +286,7 @@ PolsbyPopper<-function(nodevector){
 #' sdict             <- shpvector %>% filter(group==0.1)
 #' #Calculate the Convex Hull metric of the polygons and return a list of values
 #' conHull       <- ConvexHull(sdict$long, sdict$lat, sdict$id) 
-#' #Add a column of the perimeter values to the spatial data frame
+#' #Add a column of the Convex Hull values to the spatial data frame
 #' shpvector@data["ConvexHull"]<- conHull        
 #' ggplot()+
 #'   geom_polygon(data=shape3,aes(x=long,y=lat,group=group,
@@ -189,12 +297,12 @@ PolsbyPopper<-function(nodevector){
 
 ConvexHull<-function(x,y,id=NA){
   if(is.na(id)){
-    gerry:::ConvexHull(x,y)
+    gerry:::gConvexHull(x,y)
   }
   else{
-    gerry:::ConvexHull(x,y,id)
+    gerry:::gConvexHullMulti(x,y,id)
   }
-
 }
+
 
 
