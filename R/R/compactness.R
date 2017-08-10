@@ -44,23 +44,24 @@ allmetricscalc <- function(shape){#Calculates all metrics and adds output metric
 }
 
 
-#' @title Calculate the perimeter of all polygons in a spatial data frame
+#' @title Calculate the perimeter one or more polygons
 #'
 #' @description
-#'        Returns a vector of values with the perimeters for all polygons in the Spatial Data Frame.
+#'        Calculates the perimeter of one or more polygons from a spatial data
+#'        frame. The frame can be generated with sp::fortify()
 #'
-#' @param nodevector A vector of the XY coordinates for all nodes in a polygon - generated using sp.fortify()
+#' @param  x   X-coordinates of the polygon nodes
+#' @param  y   Y-coordinates of the polygon nodes
+#' @parma  id  ids which indicate to which polygons each xy-coordinate belongs
 #'
-#' @return A vector of the perimeter measurements for each polygon in the Spatial Data Frame.
+#' @return The perimeter of one polygon or a dataframe of id-perimeter pairs
 #'
 #' @examples
 #'
-#'    
 #' library(sp)
 #' library(ggplot2)
 #' library(plyr)
 #' library(gerry)
-#' library(dplyr)
 #' #identify the path of the sample shapefile of congressional districts
 #' shapefilepath     <- mass_cd()                    
 #' #create a spatial data frame
@@ -72,9 +73,9 @@ allmetricscalc <- function(shape){#Calculates all metrics and adds output metric
 #' #Create an ID number for each polgyon
 #' reproj@data["id"] <- rownames(shape@data)         
 #' #fortify the data, converting it to a vector of XY values
-#' shape2            <- fortify(reproj)              
+#' shape2            <- sp::fortify(reproj)              
 #' #create a vector of the nodes in the polygons for the spatial data frame
-#' shpvector         <- fortify(reproj)              
+#' shpvector         <- sp::fortify(reproj)              
 #' sdict             <- shpvector %>% filter(group==0.1)
 #' #Calculate the perimeter of the polygons and return a list of values
 #' shpperim          <- PerimeterCalc(sdict$long, sdict$lat, sdict$id) 
@@ -84,8 +85,11 @@ allmetricscalc <- function(shape){#Calculates all metrics and adds output metric
 #'   geom_polygon(data=shape3,aes(x=long,y=lat,group=group,fill=shpvector$Perimeter))     
 #'  
 #' @export
-PerimeterCalc<-function(lon,lat,id){
-  gerry:::Perimeter(lon,lat,id)
+PerimeterCalc<-function(x,y,id=NA){
+  if(is.na(id))
+    gerry:::gPerimeter(x,y)
+  else
+    gerry:::gPerimeterMulti(x,y,id)
 }
 
 #' @title Calculate the Polsby Popper metric for each polygon in a spatial data frame
