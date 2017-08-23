@@ -1,5 +1,29 @@
-all:
-	VARS_OLD := $(.VARIABLES)
-	$(foreach v,                                        \
-	$(filter-out $(VARS_OLD) VARS_OLD,$(.VARIABLES)),   \
-	$(info $(v) = $($(v))))
+# -*- Makefile -*-
+
+#CXX11 = g++
+#ALL_CXXFLAGS =  -fpic  -g -O2
+#SHLIB_CXX11LDFLAGS = -shared
+#SHLIB = mandeR.so
+#AR = ar
+
+PKG_CPPFLAGS = -DDOCTEST_CONFIG_DISABLE
+#PKG_LIBS = -L$(shell pwd) -lmylibs
+
+include compactnesslib/sources.mkf
+
+COMPACTNESS_SOURCES_HERE = $(addprefix compactnesslib/,$(COMPACTNESS_SOURCES)) Rwrapper.cpp
+OBJECTS = $(COMPACTNESS_SOURCES_HERE:.cpp=.o)
+
+.PHONY: all mylibs
+
+all: $(SHLIB)
+$(SHLIB): mylibs .cheese
+
+mylibs: $(OBJECTS)
+	#$(AR) -rucs mylibs.a $(OBJECTS)
+
+.cheese:
+	$(info $(shell pwd))
+
+%.o: %.cpp
+	$(CXX11) -c $(ALL_CXXFLAGS) $(ALL_CPPFLAGS) $(PKG_CPPFLAGS) $< -o $@ 
