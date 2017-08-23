@@ -1,6 +1,4 @@
 Rcpp::loadModule("complib",   TRUE)
-#Rcpp::loadModule("gridgens",  TRUE)
-#Rcpp::loadModule("gridstats", TRUE)
 
 #TODO: Used to display start-up messages
 #.onAttach <- function(...) {
