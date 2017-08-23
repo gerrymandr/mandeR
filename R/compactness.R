@@ -1,21 +1,17 @@
-#' @importFrom utils read.csv read.table tail write.table
-#' @importFrom rgdal readOGR
-#' @importFrom rgdal writeOGR
-#' @importFrom ggplot2 fortify
-#' @importFrom methods as
-#' @import     dplyr
-#' @import     sp
-#' @useDynLib  gerry
+#' @importFrom utils read.csv
+#' @importFrom sf st_read
+#' @importFrom geojsonio geojson_json
+#' @useDynLib  mandeR
 
-#' @import rgeos
+#roxygen2:::roxygenize()
 
-
-#' @title Get path to dggrid executable
+#' @title Get an example shapefile
 #'
 #' @description
-#'        Returns a path to the dggrid executable. Used for running stuff.
+#'        Returns the path of an example shapefile of the electoral districts of 
+#'        Massachusetts.
 #'
-#' @return A string representing the path to the dggrid executable.
+#' @return A string representing the path to the example shapefile
 #'
 #' @export
 mass_cd <- function(){
@@ -23,284 +19,95 @@ mass_cd <- function(){
 }
 
 
-#' @title TODO
+
+#' @title Retrieve a list of available scores
 #'
 #' @description
-#'        TODO
+#'        mandeR, through compactnesslib, has access to a growing number of
+#'        compactness scores. This function provides a list of them. Subsets of
+#'        this list can be passed to other functions to restrict which scores
+#'        are calculated. Descriptions of scores may be found in the vignettes.
 #'
-#' @return TODO
+#' @return A list of scores names, which are represented by character strings.
 #'
 #' @export
-
-#Calculates all metrics and adds output metrics to the spatial dataframe attributes
-allmetricscalc <- function(shape){
-  spdf                       <- sp::fortify(shape)
-  pericol                    <- Perimeter(spdf)
-  polsbypoppercol            <- PolsbyPopper(spdf)
-  schwartzcol                <- Schwartzberg(spdf)
-  shape@data["Perimeter"]    <- pericol
-  shape@data["PolsbyPopper"] <- polsbypoppercol
-  shape@data["Schwartzberg"] <- schwartzcol
+getListOfScores <- function(){
+  cl_getListOfScores()
 }
 
 
-#' @title Calculate the perimeter one or more polygons
+
+#' @title Augment an existing shapefile by adding scores
 #'
 #' @description
-#'        Calculates the perimeter of one or more polygons from a spatial data
-#'        frame. The frame can be generated with sp::fortify()
+#'        Since analysis often happens at a high level, after scores have been
+#"        calculated, it is often easiest to add scores to the underlying
+#'        shapefile itself. This function does this.
 #'
-#' @param  x   X-coordinates of the polygon nodes
-#' @param  y   Y-coordinates of the polygon nodes
-#' @param  id  ids which indicate to which polygons each xy-coordinate belongs
+#' @param filename Filename of the shapefile to be altered.
+#' @param scores   List of scores to include, a subset of `getListOfScores()`
 #'
-#' @return The perimeter of one polygon or a dataframe of id-perimeter pairs
+#' @return The filename of the modified shapefile.
 #'
-#' @examples
-#'
-#' library(sp)
-#' library(ggplot2)
-#' library(plyr)
-#' library(gerry)
-#' #identify the path of the sample shapefile of congressional districts
-#' shapefilepath     <- mass_cd()                    
-#' #create a spatial data frame
-#' shape             <- readOGR(shapefilepath)       
-#' #Specify and equal area coordinate reference system
-#' proj              <- test<-CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 
-#'                                 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 
-#'                                 +datum=NAD83 +units=m")
-#' #reproject the data to the specified CRS
-#' reproj            <- spTransform(shape,proj)      
-#' #Create an ID number for each polgyon
-#' reproj@data["id"] <- rownames(shape@data)                   
-#' #create a vector of the nodes in the polygons for the spatial data frame
-#' shpvector         <- fortify(reproj)              
-#' sdict             <- shpvector %>% filter(group==0.1)
-#' #Calculate the perimeter of the polygons and return a list of values
-#' shpperim          <- PerimeterCalc(sdict$long, sdict$lat, sdict$id) 
-#' #Add a column of the perimeter values to the spatial data frame
-#' shpvector@data["Perimeter"]<-shpperim         
-#' ggplot()+
-#'   geom_polygon(data=shape3,aes(x=long,y=lat,group=group,
-#'                fill=shpvector$Perimeter))     
-#'  
 #' @export
-
-PerimeterCalc<-function(x,y,id=NA){
-  if(is.list(id))
-    gerry:::gPerimeter(x,y)
-  else
-    as.data.frame(gerry:::gPerimeterMulti(x,y,id))
+augmentShapefileWithScores <- function(filename, scores=c('all')){
+  cl_augmentShapefileWithScores(filename, scores)
+  filename
 }
 
 
-#' @title Calculate the area for one or multiple polygons in a
-#'        Shapefile
+
+#' @title Augment an existing shapefile by adding scores
 #'
 #' @description
-#'        Returns a vector of values with the area for all 
-#'        polygons in the Spatial Data Frame.
-#'
-#' @param  x   X-coordinates of the polygon nodes
-#' @param  y   Y-coordinates of the polygon nodes
-#' @param  id  ids which indicate to which polygons each xy-coordinate belongs
+#'        Since analysis often happens at a high level, after scores have been
+#"        calculated, it is often easiest to add scores to the underlying
+#'        shapefile itself. This function does this.
 #' 
-#' @return  The area of polygon(s) 
+#' @param in_filename  Filename of the shapefile to be scored.
+#' @param out_filename Filename of the shapefile that will hold the results.
+#' @param scores       List of scores to include, a subset of `getListOfScores()`
+#'
+#' @return The filename of the new shapefile.
+#'
 #' @examples
-#'   
-#' library(sp)
-#' library(ggplot2)
-#' library(plyr)
-#' library(gerry)
-#' #identify the path of the sample shapefile of congressional districts
-#' shapefilepath     <- mass_cd()                    
-#' #create a spatial data frame
-#' shape             <- readOGR(shapefilepath)       
-#' #Specify and equal area coordinate reference system
-#' proj              <- test<-CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 
-#'                                 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 
-#'                                 +datum=NAD83 +units=m")
-#' #reproject the data to the specified CRS
-#' reproj            <- spTransform(shape,proj)      
-#' #Create an ID number for each polgyon
-#' reproj@data["id"] <- rownames(shape@data)                   
-#' #create a vector of the nodes in the polygons for the spatial data frame
-#' shpvector         <- fortify(reproj)              
-#' sdict             <- shpvector %>% filter(group==0.1)
-#' #Calculate the area of the polygons and return a list of values
-#' parea        <- AreaCalc(sdict$long, sdict$lat, sdict$id) 
-#' #Add a column of the perimeter values to the spatial data frame
-#' shpvector@data["Area"]<- parea         
-#' ggplot()+
-#'   geom_polygon(data=shape3,aes(x=long,y=lat,group=group,
-#'                fill=shpvector$Area))     
-#'  
+#' library(mandeR)
+#' newname <- tempfile()
+#' mandeR::augmentShapefileWithScores(mass_cd(), newname)
+#'
 #' @export
-AreaCalc<-function(x,y,id=NA){
-  if(is.list(id))
-    gerry:::gPolygonArea(x,y)
-  else
-    as.data.frame(gerry:::gPolygonAreaMulti(x,y,id))
+augmentShapefileWithScores <- function(in_filename, out_filename, scores=c('all')){
+  cl_addScoresToNewShapefile(in_filename, out_filename, scores)
+  out_filename
 }
 
 
-#' @title Calculate Polsby Popper Metric for one or multiple polygons in a
-#'        Shapefile
+
+#' @title Get a dataframe of scores from a GeoJSON input
 #'
 #' @description
-#'        Returns a vector of values with the Polsby Popper metric for all 
-#'        polygons in the Spatial Data Frame.
-#'
-#' @param  x   X-coordinates of the polygon nodes
-#' @param  y   Y-coordinates of the polygon nodes
-#' @param  id  ids which indicate to which polygons each xy-coordinate belongs
+#'        GeoJSON is used to pass information between compactnesslib and its
+#'        higher level interfaces. (Well-known text could be used, but we don't
+#'        have a parser for that, yet. Volunteer?) This function takes a GeoJSON
+#'        description of one or more multipolygons and returns their scores as a
+#'        data table.
 #' 
-#' @return  The Polsby Popper metrics 
+#' @param geojson_str  GeoJSON representing features to be scored.
+#' @param id           Attribute id to key features in the resulting table. If
+#'                     omitted, numeric keys are returned based on the input
+#'                     order of the features.
+#' @param scores       List of scores to include, a subset of `getListOfScores()`
+#'
+#' @return A data frame with scores as columns, including the id column.
+#'
 #' @examples
-#'   
-#' library(sp)
-#' library(ggplot2)
-#' library(plyr)
-#' library(gerry)
-#' #identify the path of the sample shapefile of congressional districts
-#' shapefilepath     <- mass_cd()                    
-#' #create a spatial data frame
-#' shape             <- readOGR(shapefilepath)       
-#' #Specify and equal area coordinate reference system
-#' proj              <- test<-CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 
-#'                                 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 
-#'                                 +datum=NAD83 +units=m")
-#' #reproject the data to the specified CRS
-#' reproj            <- spTransform(shape,proj)      
-#' #Create an ID number for each polgyon
-#' reproj@data["id"] <- rownames(shape@data)                   
-#' #create a vector of the nodes in the polygons for the spatial data frame
-#' shpvector         <- fortify(reproj)              
-#' sdict             <- shpvector %>% filter(group==0.1)
-#' #Calculate the Polsby Popper metric of the polygons and return a list of values
-#' PolPop        <- PolsbyPopper(sdict$long, sdict$lat, sdict$id) 
-#' #Add a column of the perimeter values to the spatial data frame
-#' shpvector@data["PolsbyPopper"]<- PolPop         
-#' ggplot()+
-#'   geom_polygon(data=shape3,aes(x=long,y=lat,group=group,
-#'                fill=shpvector$PolsbyPopper))     
-#'  
+#' library(mandeR)
+#' dists <- sf::st_read(mass_cd())
+#' gj    <- geojsonio::geojson_json(dists)
+#' mandeR::getScoresForGeoJSON(gj, 'DIST_NUM')
+#'
 #' @export
-
-
-PolsbyPopper<-function(x,y,id=NA){
-  if(is.list(id))
-    gerry:::gScorePolsbyPopper(x,y)
-  else
-    as.data.frame(gerry:::gScorePolsbyPopperMulti(x,y,id))
+getScoresForGeoJSON <- function(geojson_str, id='', scores=c('all')){
+  gj <- cl_getScoresForGeoJSON(geojson_str, id, scores)
+  read.csv(text=gj)
 }
-
-
-#' @title Calculate Schwartzberg Metric for one or multiple polygons in a
-#'        Shapefile
-#'
-#' @description
-#'        Returns a vector of values with the Schwartzberg metric for all 
-#'        polygons in the Spatial Data Frame.
-#'
-#' @param  x   X-coordinates of the polygon nodes
-#' @param  y   Y-coordinates of the polygon nodes
-#' @param  id  ids which indicate to which polygons each xy-coordinate belongs
-#' 
-#' @return  The Schwartzberg metrics 
-#' @examples
-#'   
-#' library(sp)
-#' library(ggplot2)
-#' library(plyr)
-#' library(gerry)
-#' #identify the path of the sample shapefile of congressional districts
-#' shapefilepath     <- mass_cd()                    
-#' #create a spatial data frame
-#' shape             <- readOGR(shapefilepath)       
-#' #Specify and equal area coordinate reference system
-#' proj              <- test<-CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 
-#'                                 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 
-#'                                 +datum=NAD83 +units=m")
-#' #reproject the data to the specified CRS
-#' reproj            <- spTransform(shape,proj)      
-#' #Create an ID number for each polgyon
-#' reproj@data["id"] <- rownames(shape@data)                   
-#' #create a vector of the nodes in the polygons for the spatial data frame
-#' shpvector         <- fortify(reproj)              
-#' sdict             <- shpvector %>% filter(group==0.1)
-#' #Calculate the Convex Hull metric of the polygons and return a list of values
-#' schwartz          <- Schwartzberg(sdict$long, sdict$lat, sdict$id) 
-#' #Add a column of the Schwartzburg values to the spatial data frame
-#' shpvector@data["Schwartzberg"]<- schwartz        
-#' ggplot()+
-#'   geom_polygon(data=shape3,aes(x=long,y=lat,group=group,
-#'   fill=shpvector$Schwartzberg))     
-#'  
-#' @export
-Schwartzberg<-function(x,y,id=NA){
-  if(is.list(id)){
-    gerry:::gScoreSchwartzberg(x,y)
-  }
-  else{
-    as.data.frame(gerry:::gScoreSchwartzbergMulti(x,y,id))
-  }
-}
-
-
-#' @title Calculate Convex Hull Metric for one or multiple polygons in a
-#'        Shapefile
-#'
-#' @description
-#'        Returns a vector of values with the Convex Hull / Area metric for all 
-#'        polygons in the Spatial Data Frame.
-#'
-#' @param  x   X-coordinates of the polygon nodes
-#' @param  y   Y-coordinates of the polygon nodes
-#' @param  id  ids which indicate to which polygons each xy-coordinate belongs
-#' 
-#' @return  The Convex Hull metrics 
-#' @examples
-#'   
-#' library(sp)
-#' library(ggplot2)
-#' library(plyr)
-#' library(gerry)
-#' #identify the path of the sample shapefile of congressional districts
-#' shapefilepath     <- mass_cd()                    
-#' #create a spatial data frame
-#' shape             <- readOGR(shapefilepath)       
-#' #Specify and equal area coordinate reference system
-#' proj              <- test<-CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 
-#'                                 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 
-#'                                 +datum=NAD83 +units=m")
-#' #reproject the data to the specified CRS
-#' reproj            <- spTransform(shape,proj)      
-#' #Create an ID number for each polgyon
-#' reproj@data["id"] <- rownames(shape@data)                   
-#' #create a vector of the nodes in the polygons for the spatial data frame
-#' shpvector         <- fortify(reproj)              
-#' sdict             <- shpvector %>% filter(group==0.1)
-#' #Calculate the Convex Hull metric of the polygons and return a list of values
-#' conHull       <- ConvexHull(sdict$long, sdict$lat, sdict$id) 
-#' #Add a column of the Convex Hull values to the spatial data frame
-#' shpvector@data["ConvexHull"]<- conHull        
-#' ggplot()+
-#'   geom_polygon(data=shape3,aes(x=long,y=lat,group=group,
-#'   fill=shpvector$ConvexHull))     
-#'  
-#' @export
-
-
-ConvexHull<-function(x,y,id=NA){
-  if(is.list(id)){
-    gerry:::gScoreConvexHull(x,y)
-  }
-  else{
-    as.data.frame(gerry:::gScoreConvexHullMulti(x,y,id))
-  }
-}
-
-
-
