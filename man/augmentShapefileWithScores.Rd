@@ -2,39 +2,19 @@
 % Please edit documentation in R/mandeR.R
 \name{augmentShapefileWithScores}
 \alias{augmentShapefileWithScores}
-\alias{augmentShapefileWithScores}
 \title{Augment an existing shapefile by adding scores}
 \usage{
-augmentShapefileWithScores(in_filename, out_filename, scores = c("all"))
-
-augmentShapefileWithScores(in_filename, out_filename, scores = c("all"))
+augmentShapefileWithScores(filename, scores = c("all"))
 }
 \arguments{
-\item{in_filename}{Filename of the shapefile to be scored.}
-
-\item{out_filename}{Filename of the shapefile that will hold the results.}
-
-\item{scores}{List of scores to include, a subset of `getListOfScores()`}
-
 \item{filename}{Filename of the shapefile to be altered.}
 
 \item{scores}{List of scores to include, a subset of `getListOfScores()`}
 }
 \value{
 The filename of the modified shapefile.
-
-The filename of the new shapefile.
 }
 \description{
 Since analysis often happens at a high level, after scores have been
        shapefile itself. This function does this.
-
-Since analysis often happens at a high level, after scores have been
-       shapefile itself. This function does this.
-}
-\examples{
-library(mandeR)
-newname <- tempfile()
-mandeR::augmentShapefileWithScores(mass_cd(), newname)
-
 }
