@@ -2,13 +2,14 @@
 % Please edit documentation in R/compactness.R
 \name{mass_cd}
 \alias{mass_cd}
-\title{Get path to dggrid executable}
+\title{Get an example shapefile}
 \usage{
 mass_cd()
 }
 \value{
-A string representing the path to the dggrid executable.
+A string representing the path to the example shapefile
 }
 \description{
-Returns a path to the dggrid executable. Used for running stuff.
+Returns the path of an example shapefile of the electoral districts of 
+       Massachusetts.
 }
