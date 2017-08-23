@@ -1,3 +1,0 @@
-[submodule "R/src/compactnesslib"]
-	path = R/src/compactnesslib
-	url = https://github.com/r-barnes/compactnesslib.git
