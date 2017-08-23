@@ -4,7 +4,6 @@ author:
 - Richard Barnes
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
-bibliography: bibliography.bib
 vignette: >
   %\VignetteIndexEntry{mandeR: Compactness Calculation Tool}
   %\VignetteEngine{knitr::rmarkdown}
