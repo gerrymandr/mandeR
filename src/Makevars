@@ -1,13 +1,4 @@
-# -*- Makefile -*-
-
-#CXX11 = g++
-#ALL_CXXFLAGS =  -fpic  -g -O2
-#SHLIB_CXX11LDFLAGS = -shared
-#SHLIB = mandeR.so
-#AR = ar
-
 PKG_CPPFLAGS = -DDOCTEST_CONFIG_DISABLE
-#PKG_LIBS = -L$(shell pwd) -lmylibs
 
 include compactnesslib/sources.mkf
 
