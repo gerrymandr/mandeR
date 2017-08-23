@@ -1,116 +1,51 @@
 ---
-title:  "gerry: Gerrymandering Compactness Tool"
+title:  "mandeR: Compactness Calculation Tool"
 author:
 - Richard Barnes
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: bibliography.bib
 vignette: >
-  %\VignetteIndexEntry{gerry: Gerrymandering Compactness Tool}
+  %\VignetteIndexEntry{mandeR: Compactness Calculation Tool}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 
 
-#_Gerrymandering Compactness Tool_
+#_Compactness Calculation Tool_
 
-TODO: Introduction
-
-
-
-TODO: Table example
-
-|Res |Number of Cells  | Cell Area (km^2) |    Min      |     Max     |    Mean     |    Std    |
-|---:|----------------:|-----------------:|------------:|------------:|------------:|----------:|
-|  0 |              12 | 51,006,562.17241 |             |             |             |           |
-|  1 |              32 | 17,002,187.39080 | 4,156.18000 | 4,649.10000 | 4,320.49000 | 233.01400 |
-|  2 |              92 |  5,667,395.79693 | 2,324.81000 | 2,692.72000 | 2,539.69000 | 139.33400 |
+mandeR calculates a variety of compactness measures, which are useful for
+detecting and analyzing gerrymandering of electoral districts. Beneath the hood,
+it relies on [compactnesslib](https://github.com/r-barnes/compactnesslib).
 
 
-#How do I use it?
 
-1. TODO
+#Example
 
-2. TODO
-
-
-#Examples
-
-##Binning Lat-Long Points
-
-The following example demonstrates converting lat-long locations (the 
-epicenters of earthquakes) to discrete global grid locations (cell numbers), binning based on these numbers, and plotting the result. Additionally, the 
-example demonstrates how to get the center coordinates of the cells.
+The following example loads some data into R and then calculates compactness
+scores for that data. GeoJSON is used to communicate with the underlying
+compactnesslib.
 
 ```{r, results='hide', warning=FALSE, error=FALSE, message=FALSE, fig.width=8, fig.height=8}
-#Include libraries
-library(gerry)
-library(sp)
-library(ggplot2)
+#Load library
+library(mandeR)
 
-#identify the path of the sample shapefile of congressional districts
-shapefilepath     <- mass_cd()          
+#Read a shapefile containing districts
+dists  <- sf::st_read(mass_cd())
 
-#create a spatial data frame
-shape             <- readOGR(shapefilepath)       
+#Convert the shapefile to GeoJSON
+gj     <- geojsonio::geojson_json(dists)
 
-#Specify and equal area coordinate reference system
-proj              <- test<-CRS("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=37.5 
-                                 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 
-                                 +datum=NAD83 +units=m")
-#reproject the data to the specified CRS
-reproj            <- spTransform(shape,proj)      
+#Retrieve compactness scores from mandeR
+scores <- mandeR::getScoresForGeoJSON(gj, 'DIST_NUM', c('all'))
 
-#Create an ID number for each polgyon
-reproj@data["id"] <- rownames(shape@data)
+#Merge scores back into districts
+dists  <- merge(dists, scores, by.x="DIST_NUM", by.y="id")
 
-#create a vector of the nodes in the polygons for the spatial data frame
-shpvec            <- fortify(reproj)
-shpvec$id         <- as.numeric(shpvec$id)
-
-#Calculate the Schwartzberg metric 
-schwartz  <- Schwartzberg(shpvec$long, shpvec$lat, as.numeric(shpvec$id))
-
-#Add Schwartzberg metric to data frame
-shpvec <- left_join(shpvec,schwartz)
-
-#Plot a chloropleth
-ggplot()+geom_polygon(data=shpvec,aes(x=long,y=lat,group=group,fill=val))
-
-#Break districts apart along with their Schwartzberg score
-ggplot(shpvec, aes(x=long,y=lat,group=group)) + geom_polygon() + facet_wrap(~val, scales="free")
-
-#Export to Shapefile
-schwartz$id<-as.character(schwartz$id)
-reproj@data<-left_join(reproj@data,schwartz)
-writeOGR(obj=reproj, dsn="tempdir", layer="Schwartzberg", driver="ESRI Shapefile") 
+#Plot districts showing each of the scores
+plot(dists[mandeR::getListOfScores()])
 ```
-
-#Roadmap
-
-* TODO
-
-#Credits
-
-This R package was developed by:
-
- * Richard Barnes (http://rbarnes.org)
- * John Connors
-
-Funding was provided by:
-
- * The Metric Geometry And Gerrymandering Group at Tufts University ([link](https://sites.tufts.edu/gerrymandr/))
-
-
-
-#Disclaimer
-
-This package *should* operate in the manner described here and in the package's
-main documentation. Unfortunately, none of us are paid enough to make
-absolutely, doggone certain that that's the case. Use at your own discretion.
-That said, if you find bugs or are seeking enhancements, we want to hear about
-them.
 
 
 
@@ -118,8 +53,4 @@ them.
 
 Please cite this package using the text returned by:
 
-    citation('gerry')
-
-
-
-#References
+    citation('mandeR')

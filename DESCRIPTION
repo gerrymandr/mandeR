@@ -1,6 +1,6 @@
 Package: mandeR
 Type: Package
-Title: District Compactness Library
+Title: Compactness Calculation Tool
 Version: 0.0.2
 Date: 2017-08-23
 Author: Richard Barnes [aut, cre], John Connors [aut, cre]
@@ -16,7 +16,7 @@ Suggests: knitr,
 License: MIT + file LICENCE
 Authors@R: c(person("Richard", "Barnes",    role = c("aut", "cre"), email = "rbarnes@umn.edu"),
              person("John",   "Connors",    role = c("aut", "cre"), email = "jpcc@bu.edu"))
-Description: mandeR calculates a variety of compactness measures, which are useful for analyzing electoral districts. 
+Description: mandeR calculates a variety of compactness measures, which are useful for detecting and analyzing gerrymandering of electoral districts.
 URL: https://github.com/r-barnes/mandeR
 BugReports: https://github.com/r-barnes/mandeR
 Imports:
