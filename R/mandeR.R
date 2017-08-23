@@ -15,7 +15,7 @@
 #'
 #' @export
 mass_cd <- function(){
-  file.path(find.package('gerry'), "extdata", "CONGRESSMA_POLY.shp")
+  file.path(find.package('mandeR'), "extdata", "CONGRESSMA_POLY.shp")
 }
 
 
@@ -73,10 +73,10 @@ augmentShapefileWithScores <- function(filename, scores=c('all')){
 #' @examples
 #' library(mandeR)
 #' newname <- tempfile()
-#' mandeR::augmentShapefileWithScores(mass_cd(), newname)
+#' mandeR::addScoresToNewShapefile(mass_cd(), newname)
 #'
 #' @export
-augmentShapefileWithScores <- function(in_filename, out_filename, scores=c('all')){
+addScoresToNewShapefile <- function(in_filename, out_filename, scores=c('all')){
   cl_addScoresToNewShapefile(in_filename, out_filename, scores)
   out_filename
 }
