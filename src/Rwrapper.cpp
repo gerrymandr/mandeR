@@ -9,8 +9,10 @@ std::vector<std::string> getListOfScores() {
 
 std::string getScoresForGeoJSON(const std::string &geojson, const std::string id, const std::vector<std::string> &score_list){
   auto gc = complib::ReadGeoJSON(geojson);
+  for(const auto &x: score_list)
+    std::cout<<x<<std::endl;
   complib::CalculateListOfScores(gc, score_list);
-  return complib::OutScoreJSON(gc, id);
+  return complib::OutScoreCSV(gc, id);
 }
 
 void augmentShapefileWithScores(const std::string filename, const std::vector<std::string> &score_list){
@@ -30,10 +32,10 @@ void addScoresToNewShapefile(const std::string in_filename, const std::string ou
 
 
 RCPP_MODULE(complib) {
-  function("getListOfScores",            &getListOfScores);
-  function("getScoresForGeoJSON",        &getScoresForGeoJSON);
-  function("augmentShapefileWithScores", &augmentShapefileWithScores);
-  function("addScoresToNewShapefile",    &addScoresToNewShapefile);
+  function("cl_getListOfScores",            &getListOfScores);
+  function("cl_getScoresForGeoJSON",        &getScoresForGeoJSON);
+  function("cl_augmentShapefileWithScores", &augmentShapefileWithScores);
+  function("cl_addScoresToNewShapefile",    &addScoresToNewShapefile);
 }
 
 
