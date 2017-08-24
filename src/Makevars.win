@@ -1,0 +1,14 @@
+PKG_CPPFLAGS = -DDOCTEST_CONFIG_DISABLE
+
+COMPACTNESS_SOURCES_HERE = Rwrapper.cpp RcppExports.cpp compactnesslib/shapelib/safileio.cpp compactnesslib/shapelib/shptree.cpp compactnesslib/shapelib/shpopen.cpp compactnesslib/shapelib/dbfopen.cpp compactnesslib/geom.cpp compactnesslib/compactengine.cpp compactnesslib/Props.cpp compactnesslib/shapefile.cpp compactnesslib/geojson.cpp compactnesslib/Reprojector.cpp compactnesslib/csv.cpp
+OBJECTS = $(COMPACTNESS_SOURCES_HERE:.cpp=.o)
+
+.PHONY: all mylibs
+
+all: $(SHLIB)
+$(SHLIB): mylibs
+
+mylibs: $(OBJECTS)
+
+%.o: %.cpp
+	$(CXX11) -c $(ALL_CXXFLAGS) $(ALL_CPPFLAGS) $(PKG_CPPFLAGS) $< -o $@ 
