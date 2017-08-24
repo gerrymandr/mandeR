@@ -11,4 +11,4 @@ $(SHLIB): mylibs
 mylibs: $(OBJECTS)
 
 %.o: %.cpp
-	$(CXX11) -c $(ALL_CXXFLAGS) $(ALL_CPPFLAGS) $(PKG_CPPFLAGS) $< -o $@ 
+	$(CXX) -c $(ALL_CXXFLAGS) $(ALL_CPPFLAGS) $(PKG_CPPFLAGS) $< -o $@ 
