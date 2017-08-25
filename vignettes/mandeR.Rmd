@@ -34,21 +34,31 @@ library(mandeR)
 #Read a shapefile containing districts
 dists  <- sf::st_read(mass_cd())
 
+#Get the number of districts in the shapefile
+ndists <- length(st_geometry(dists))
 
-#Get the WKT for a district
-wkt_str <- st_as_text(st_geometry(dists)[[1]])
+#Variable to hold scores
+scores <- NA
 
-#Retrieve compactness scores from mandeR
-scores <- mandeR::getScoresForWKT(wkt_str)
+for(i in 1:ndists){
+  #Get the WKT for a district
+  wkt_str <- st_as_text(st_geometry(dists)[[i]])
 
-#Set the ID of the district in the return
-scores$id <- dists$DIST_NUM[[1]]
+  #Retrieve compactness scores from mandeR
+  tempscores <- mandeR::getScoresForWKT(wkt_str)
+
+  #Set the ID of the district in the return
+  tempscores$id <- dists$DIST_NUM[[i]]
+
+  #Add scores to list
+  scores <- rbind(scores,tempscores)
+}
 
 #Merge scores back into districts
-#dists  <- merge(dists, scores, by.x="DIST_NUM", by.y="id")
+dists  <- merge(dists, scores, by.x="DIST_NUM", by.y="id")
 
 #Plot districts showing each of the scores
-#plot(dists[mandeR::getListOfScores()])
+plot(dists[mandeR::getListOfScores()])
 ```
 
 
