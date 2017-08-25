@@ -2,7 +2,7 @@ Package: mandeR
 Type: Package
 Title: Compactness Calculation Tool
 Version: 1.0.0
-Date: 2017-08-23
+Date: 2017-08-24
 Author: Richard Barnes [aut, cre], John Connors [aut]
 Maintainer: Richard Barnes <rbarnes@umn.edu>
 NeedsCompilation: yes
