@@ -16,5 +16,13 @@ The filename of the modified shapefile.
 }
 \description{
 Since analysis often happens at a high level, after scores have been
-       shapefile itself. This function does this.
+       shapefile itself. This function does this. The shapefile's projection
+       must be appropriate: latlong cannot be used.
+}
+\examples{
+\dontrun{
+library(mandeR)
+mandeR::augmentShapefileWithScores("path/to/myshapefile.shp", c("Reock", "area"))
+}
+
 }

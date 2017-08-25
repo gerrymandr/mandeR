@@ -6,7 +6,7 @@ Date: 2017-08-25
 Author: Richard Barnes [aut, cre], John Connors [aut], Frank Warmerdam [ctb], Viktor Kirilov [ctb]
 Maintainer: Richard Barnes <rbarnes@umn.edu>
 NeedsCompilation: yes
-Depends: R (>= 3.4.0), geojsonio (>= 0.4.0), sf (>= 0.5.3)
+Depends: R (>= 3.4.0), sf (>= 0.5.3)
 Suggests: knitr,
     rmarkdown,
     R.rsp

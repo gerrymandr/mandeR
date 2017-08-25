@@ -1,6 +1,5 @@
 #' @importFrom utils read.csv
-#' @importFrom sf st_read
-#' @importFrom geojsonio geojson_json
+#' @importFrom sf st_read st_as_text
 #' @useDynLib  mandeR
 
 #roxygen2:::roxygenize()
@@ -12,6 +11,9 @@
 #'        Massachusetts.
 #'
 #' @return A string representing the path to the example shapefile
+#'
+#' @examples
+#' file.exists(mass_cd())
 #'
 #' @export
 mass_cd <- function(){
@@ -30,6 +32,9 @@ mass_cd <- function(){
 #'
 #' @return A list of scores names, which are represented by character strings.
 #'
+#' @examples
+#' mandeR::getListOfScores()
+#'
 #' @export
 getListOfScores <- function(){
   cl_getListOfScores()
@@ -42,12 +47,19 @@ getListOfScores <- function(){
 #' @description
 #'        Since analysis often happens at a high level, after scores have been
 #"        calculated, it is often easiest to add scores to the underlying
-#'        shapefile itself. This function does this.
+#'        shapefile itself. This function does this. The shapefile's projection
+#'        must be appropriate: latlong cannot be used.
 #'
 #' @param filename Filename of the shapefile to be altered.
 #' @param scores   List of scores to include, a subset of `getListOfScores()`
 #'
 #' @return The filename of the modified shapefile.
+#'
+#' @examples
+#' \dontrun{
+#' library(mandeR)
+#' mandeR::augmentShapefileWithScores("path/to/myshapefile.shp", c("Reock", "area"))
+#' }
 #'
 #' @export
 augmentShapefileWithScores <- function(filename, scores=c('all')){
@@ -62,7 +74,8 @@ augmentShapefileWithScores <- function(filename, scores=c('all')){
 #' @description
 #'        Since analysis often happens at a high level, after scores have been
 #"        calculated, it is often easiest to add scores to the underlying
-#'        shapefile itself. This function does this.
+#'        shapefile itself. This function does this. The shapefile's projection
+#'        must be appropriate: latlong cannot be used.
 #' 
 #' @param in_filename  Filename of the shapefile to be scored.
 #' @param out_filename Filename of the shapefile that will hold the results.
@@ -83,31 +96,27 @@ addScoresToNewShapefile <- function(in_filename, out_filename, scores=c('all')){
 
 
 
-#' @title Get a dataframe of scores from a GeoJSON input
+#' @title Get a dataframe of scores from a WKT input
 #'
 #' @description
-#'        GeoJSON is used to pass information between compactnesslib and its
-#'        higher level interfaces. (Well-known text could be used, but we don't
-#'        have a parser for that, yet. Volunteer?) This function takes a GeoJSON
-#'        description of one or more multipolygons and returns their scores as a
-#'        data table.
+#'        WKT is used to pass information between compactnesslib and its
+#'        higher level interfaces. This function takes a WKT string of a polygon
+#'        or a multipolygons and returns its scores as a data frame. The
+#'        coordinates must be appropriate: latlong cannot be used.
 #' 
-#' @param geojson_str  GeoJSON representing features to be scored.
-#' @param id           Attribute id to key features in the resulting table. If
-#'                     omitted, numeric keys are returned based on the input
-#'                     order of the features.
+#' @param wkt_str      WKT representing feature to be scored.
 #' @param scores       List of scores to include, a subset of `getListOfScores()`
 #'
 #' @return A data frame with scores as columns, including the id column.
 #'
 #' @examples
 #' library(mandeR)
-#' dists <- sf::st_read(mass_cd())
-#' gj    <- geojsonio::geojson_json(dists)
-#' mandeR::getScoresForGeoJSON(gj, 'DIST_NUM')
+#' dists   <- sf::st_read(mass_cd())
+#' wkt_str <- st_as_text(st_geometry(dists)[[1]])
+#' mandeR::getScoresForWKT(wkt_str)
 #'
 #' @export
-getScoresForGeoJSON <- function(geojson_str, id='', scores=c('all')){
-  gj <- cl_getScoresForGeoJSON(geojson_str, id, scores)
+getScoresForWKT <- function(wkt_str, scores=c('all')){
+  gj <- cl_getScoresForWKT(wkt_str, scores)
   read.csv(text=gj)
 }

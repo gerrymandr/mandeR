@@ -7,10 +7,10 @@ std::vector<std::string> getListOfScores() {
   return complib::score_names;
 }
 
-std::string getScoresForGeoJSON(const std::string &geojson, const std::string id, const std::vector<std::string> &score_list){
-  auto gc = complib::ReadGeoJSON(geojson);
+std::string getScoresForWKT(const std::string &wktstr, const std::vector<std::string> &score_list){
+  auto gc = complib::ReadWKT(wktstr);
   complib::CalculateListOfScores(gc, score_list);
-  return complib::OutScoreCSV(gc, id);
+  return complib::OutScoreCSV(gc, "");
 }
 
 void augmentShapefileWithScores(const std::string filename, const std::vector<std::string> &score_list){
@@ -31,7 +31,7 @@ void addScoresToNewShapefile(const std::string in_filename, const std::string ou
 
 RCPP_MODULE(complib) {
   function("cl_getListOfScores",            &getListOfScores);
-  function("cl_getScoresForGeoJSON",        &getScoresForGeoJSON);
+  function("cl_getScoresForWKT",            &getScoresForWKT);
   function("cl_augmentShapefileWithScores", &augmentShapefileWithScores);
   function("cl_addScoresToNewShapefile",    &addScoresToNewShapefile);
 }

@@ -18,7 +18,8 @@ The filename of the new shapefile.
 }
 \description{
 Since analysis often happens at a high level, after scores have been
-       shapefile itself. This function does this.
+       shapefile itself. This function does this. The shapefile's projection
+       must be appropriate: latlong cannot be used.
 }
 \examples{
 library(mandeR)

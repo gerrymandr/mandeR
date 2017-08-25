@@ -1,5 +1,5 @@
 ---
-title:  "mandeR: Compactness Calculation Tool"
+title:  "mandeR: Compactness Measures"
 author:
 - Richard Barnes
 date: "`r Sys.Date()`"
@@ -15,8 +15,9 @@ vignette: >
 #_Compactness Calculation Tool_
 
 mandeR calculates a variety of compactness measures, which are useful for
-detecting and analyzing gerrymandering of electoral districts. Beneath the hood,
-it relies on [compactnesslib](https://github.com/r-barnes/compactnesslib).
+detecting and analyzing gerrymandering of electoral districts. Beneath the 
+hood, it relies on
+[compactnesslib](https://github.com/r-barnes/compactnesslib).
 
 
 
@@ -33,17 +34,21 @@ library(mandeR)
 #Read a shapefile containing districts
 dists  <- sf::st_read(mass_cd())
 
-#Convert the shapefile to GeoJSON
-gj     <- geojsonio::geojson_json(dists)
+
+#Get the WKT for a district
+wkt_str <- st_as_text(st_geometry(dists)[[1]])
 
 #Retrieve compactness scores from mandeR
-scores <- mandeR::getScoresForGeoJSON(gj, 'DIST_NUM', c('all'))
+scores <- mandeR::getScoresForWKT(wkt_str)
+
+#Set the ID of the district in the return
+scores$id <- dists$DIST_NUM[[1]]
 
 #Merge scores back into districts
-dists  <- merge(dists, scores, by.x="DIST_NUM", by.y="id")
+#dists  <- merge(dists, scores, by.x="DIST_NUM", by.y="id")
 
 #Plot districts showing each of the scores
-plot(dists[mandeR::getListOfScores()])
+#plot(dists[mandeR::getListOfScores()])
 ```
 
 

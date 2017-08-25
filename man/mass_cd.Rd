@@ -13,3 +13,7 @@ A string representing the path to the example shapefile
 Returns the path of an example shapefile of the electoral districts of 
        Massachusetts.
 }
+\examples{
+file.exists(mass_cd())
+
+}

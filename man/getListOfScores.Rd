@@ -15,3 +15,7 @@ mandeR, through compactnesslib, has access to a growing number of
        this list can be passed to other functions to restrict which scores
        are calculated. Descriptions of scores may be found in the vignettes.
 }
+\examples{
+mandeR::getListOfScores()
+
+}
