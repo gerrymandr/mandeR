@@ -13,14 +13,13 @@ Suggests: knitr,
 License: MIT + file LICENCE
 Authors@R: c(person("Richard", "Barnes",    role = c("aut", "cre"), email = "rbarnes@umn.edu"),
              person("John",    "Connors",   role = c("aut"), email = "jpcc@bu.edu"),
-             person("Viktor",  "Kirilov",   role = "ctb"),
-             person("Frank",   "Warmerdam", role = "ctb"))
+             person("Frank",   "Warmerdam", role = "ctb"),
+             person("Viktor",  "Kirilov",   role = "ctb"))
 Description: Calculates a variety of compactness measures, which are useful for detecting and analyzing gerrymandering of electoral districts. Measures provided include Polsby-Popper, Area/Convex Hull, Schwartzberg, and Reock. The package accounts for many possible ambiguities in the way these scores are defined. Interfaces for efficiently processing bulk data without intermdiate loading are provided.
 URL: https://github.com/r-barnes/mandeR
 BugReports: https://github.com/r-barnes/mandeR
 Imports:
-  Rcpp (>= 0.12.12),
-  methods (>= 3.4.0)
+  Rcpp (>= 0.12.12)
 LinkingTo: Rcpp
 RcppModules: complib
 RoxygenNote: 6.0.1
