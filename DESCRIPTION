@@ -3,7 +3,7 @@ Type: Package
 Title: Compactness Measures
 Version: 1.0.0
 Date: 2017-08-25
-Author: Richard Barnes [aut, cre], John Connors [aut], Frank Warmerdam [ctb], Viktor Kirilov [ctb]
+Author: Richard Barnes [aut, cre], John Connors [ctb], Frank Warmerdam [cph], Viktor Kirilov [cph]
 Maintainer: Richard Barnes <rbarnes@umn.edu>
 NeedsCompilation: yes
 Depends: R (>= 3.4.0), sf (>= 0.5.3)
@@ -12,9 +12,9 @@ Suggests: knitr,
     R.rsp
 License: MIT + file LICENCE
 Authors@R: c(person("Richard", "Barnes",    role = c("aut", "cre"), email = "rbarnes@umn.edu"),
-             person("John",    "Connors",   role = c("aut"), email = "jpcc@bu.edu"),
-             person("Frank",   "Warmerdam", role = "ctb"),
-             person("Viktor",  "Kirilov",   role = "ctb"))
+             person("John",    "Connors",   role = c("ctb"), email = "jpcc@bu.edu"),
+             person("Frank",   "Warmerdam", role = "cph"),
+             person("Viktor",  "Kirilov",   role = "cph"))
 Description: Calculates a variety of compactness measures, which are useful for detecting and analyzing gerrymandering of electoral districts. Measures provided include Polsby-Popper, Area/Convex Hull, Schwartzberg, and Reock. The package accounts for many possible ambiguities in the way these scores are defined. Interfaces for efficiently processing bulk data without intermediate loading are provided. 
 URL: https://github.com/r-barnes/mandeR
 BugReports: https://github.com/r-barnes/mandeR
