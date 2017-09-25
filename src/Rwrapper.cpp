@@ -4,24 +4,24 @@
 using namespace Rcpp;
 
 std::vector<std::string> getListOfScores() {
-  return complib::score_names;
+  return complib::getListOfUnboundedScores();
 }
 
 std::string getScoresForWKT(const std::string &wktstr, const std::vector<std::string> &score_list){
   auto gc = complib::ReadWKT(wktstr);
-  complib::CalculateListOfScores(gc, score_list);
+  complib::CalculateListOfUnboundedScores(gc, score_list);
   return complib::OutScoreCSV(gc, "");
 }
 
 void augmentShapefileWithScores(const std::string filename, const std::vector<std::string> &score_list){
   auto gc = complib::ReadShapefile(filename);
-  complib::CalculateListOfScores(gc, score_list);
+  complib::CalculateListOfUnboundedScores(gc, score_list);
   complib::WriteShapeScores(gc, filename);
 }
 
 void addScoresToNewShapefile(const std::string in_filename, const std::string out_filename, const std::vector<std::string> &score_list){
   auto gc = complib::ReadShapefile(in_filename);
-  complib::CalculateListOfScores(gc, score_list);
+  complib::CalculateListOfUnboundedScores(gc, score_list);
   complib::WriteShapefile(gc,out_filename);
 }
 
