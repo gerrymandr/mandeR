@@ -22,10 +22,9 @@ If you want your code to be as up-to-date as possible, you can install it using:
     library(devtools) #Use `install.packages('devtools')` if need be
     install_github('r-barnes/mandeR', vignette=TRUE)
     
-A fix to Issue #1
------------------
+#### In case of compilation failure for package 'mandeR'
 
-Thanks to @mahrud: 
+(see also [Issue #1](https://github.com/gerrymandr/mandeR/issues/1))
 
 In terminal:
 
